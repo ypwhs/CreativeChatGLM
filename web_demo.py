@@ -40,7 +40,7 @@ def predict(query, max_length, top_p, temperature, history):
     history.append((query, ""))
     for response in inference(query, max_length, top_p, temperature, history):
         history[-1] = (history[-1][0], response)
-        yield history, '', ''
+        yield history, ''
 
 
 def predict_continue(query, latest_message, max_length, top_p, temperature, history):
@@ -54,7 +54,7 @@ def predict_continue(query, latest_message, max_length, top_p, temperature, hist
 
 def revise(history, latest_message):
     history[-1] = (history[-1][0], latest_message)
-    return history
+    return history, ''
 
 
 def revoke(history):
@@ -81,7 +81,7 @@ with gr.Blocks(css=""".message {
 """)
     with gr.Row():
         with gr.Column(scale=4):
-            chatbot = gr.Chatbot(elem_id="chat-box", show_label=False).style(height=600)
+            chatbot = gr.Chatbot(elem_id="chat-box", show_label=False).style(height=800)
         with gr.Column(scale=1):
             with gr.Row():
                 max_length = gr.Slider(32, 4096, value=2048, step=1.0, label="Maximum length", interactive=True)
@@ -91,18 +91,19 @@ with gr.Blocks(css=""".message {
                 query = gr.Textbox(show_label=False, placeholder="Prompts", lines=4).style(container=False)
                 generate_button = gr.Button("Generate")
             with gr.Row():
-                latest_message = gr.Textbox(show_label=False, placeholder="Response", lines=4).style(container=False)
+                continue_message = gr.Textbox(show_label=False, placeholder="Continue", lines=2).style(container=False)
                 continue_btn = gr.Button("续写")
+                revise_message = gr.Textbox(
+                    show_label=False, placeholder="Revise message", lines=2).style(container=False)
                 revise_btn = gr.Button("修订")
                 revoke_btn = gr.Button("撤回")
 
     history = gr.State([])
-    generate_button.click(
-        predict, inputs=[query, max_length, top_p, temperature, history], outputs=[chatbot, query, latest_message])
-    revise_btn.click(revise, inputs=[history, latest_message], outputs=[chatbot])
+    generate_button.click(predict, inputs=[query, max_length, top_p, temperature, history], outputs=[chatbot, query])
+    revise_btn.click(revise, inputs=[history, revise_message], outputs=[chatbot, revise_message])
     revoke_btn.click(revoke, inputs=[history], outputs=[chatbot])
     continue_btn.click(
         predict_continue,
-        inputs=[query, latest_message, max_length, top_p, temperature, history],
-        outputs=[chatbot, query, latest_message])
+        inputs=[query, continue_message, max_length, top_p, temperature, history],
+        outputs=[chatbot, query, continue_message])
 demo.queue().launch(server_name='0.0.0.0', server_port=7860, share=False, inbrowser=False)
