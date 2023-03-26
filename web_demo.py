@@ -77,7 +77,7 @@ with gr.Blocks(css=""".message {
 👋 欢迎来到 ChatGLM 创意世界！
 
 * 📝 你可以使用“修订”按钮修改最后一句 ChatGLM 的回复。
-* 📖 你可以使用“续写”按钮修改最后一句 ChatGLM 的回复，并让它继续生成更多的内容。
+* 📖 你可以使用“续写”按钮帮 ChatGLM 想一个开头，并让它继续生成更多的内容。
 """)
     with gr.Row():
         with gr.Column(scale=4):
@@ -89,9 +89,10 @@ with gr.Blocks(css=""".message {
                 temperature = gr.Slider(0.01, 5, value=0.95, step=0.01, label="Temperature", interactive=True)
             with gr.Row():
                 query = gr.Textbox(show_label=False, placeholder="Prompts", lines=4).style(container=False)
-                generate_button = gr.Button("Generate")
+                generate_button = gr.Button("生成")
             with gr.Row():
-                continue_message = gr.Textbox(show_label=False, placeholder="Continue", lines=2).style(container=False)
+                continue_message = gr.Textbox(
+                    show_label=False, placeholder="Continue message", lines=2).style(container=False)
                 continue_btn = gr.Button("续写")
                 revise_message = gr.Textbox(
                     show_label=False, placeholder="Revise message", lines=2).style(container=False)
