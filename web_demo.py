@@ -1,6 +1,6 @@
 import gradio as gr
 
-debug = False
+debug = True
 
 if debug:
 
@@ -50,9 +50,18 @@ with gr.Blocks(css=""".message {
     width: inherit !important;
     padding-left: 20px !important;
 }""") as demo:
+    gr.Markdown(
+        """
+# 💡Creative ChatGLM WebUI
+
+👋 欢迎来到 ChatGLM 创意世界！
+
+* 📝 你可以使用“修订”按钮修改最后一句 ChatGLM 的回复。
+* 📖 你可以使用“续写”按钮修改最后一句 ChatGLM 的回复，并让它继续生成更多的内容。
+""")
     with gr.Row():
         with gr.Column(scale=4):
-            chatbot = gr.Chatbot(elem_id="chat-box", show_label=False).style(height=800)
+            chatbot = gr.Chatbot(elem_id="chat-box", show_label=False).style(height=600)
         with gr.Column(scale=1):
             with gr.Row():
                 max_length = gr.Slider(32, 4096, value=2048, step=1.0, label="Maximum length", interactive=True)
@@ -62,6 +71,11 @@ with gr.Blocks(css=""".message {
                 txt = gr.Textbox(
                     show_label=False, placeholder="Enter text and press enter", lines=4).style(container=False)
                 generate_button = gr.Button("Generate")
+            with gr.Row():
+                latest_message = gr.Textbox(show_label=False, lines=4).style(container=False)
+                revise_btn = gr.Button("修订")
+                continue_btn = gr.Button("续写")
+
     history = gr.State([])
     generate_button.click(predict, inputs=[txt, max_length, top_p, temperature, history], outputs=[chatbot, txt])
 demo.queue().launch(server_name='0.0.0.0', server_port=7860, share=False, inbrowser=False)
