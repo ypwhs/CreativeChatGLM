@@ -57,6 +57,12 @@ def revise(history, latest_message):
     return history
 
 
+def revoke(history):
+    if len(history) >= 1:
+        history.pop()
+    return history
+
+
 MAX_TURNS = 20
 MAX_BOXES = MAX_TURNS * 2
 
@@ -94,7 +100,7 @@ with gr.Blocks(css=""".message {
     generate_button.click(
         predict, inputs=[query, max_length, top_p, temperature, history], outputs=[chatbot, query, latest_message])
     revise_btn.click(revise, inputs=[history, latest_message], outputs=[chatbot])
-    revoke_btn.click(lambda history: history[:-1], inputs=[history], outputs=[chatbot])
+    revoke_btn.click(revoke, inputs=[history], outputs=[chatbot])
     continue_btn.click(
         predict_continue,
         inputs=[query, latest_message, max_length, top_p, temperature, history],
