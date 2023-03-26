@@ -5,6 +5,16 @@
 * 📖 你可以使用“续写”按钮帮 ChatGLM 想一个开头，并让它继续生成更多的内容。
 * 📝 你可以使用“修订”按钮修改最后一句 ChatGLM 的回复。
 
+# 环境配置
+
+环境配置参考官方链接：[https://github.com/THUDM/ChatGLM-6B](https://github.com/THUDM/ChatGLM-6B)
+
+配置好之后，直接运行 `web_demo.py` 即可：
+
+```bash
+python web_demo.py
+```
+
 # 用法介绍
 
 ## 续写
