@@ -71,7 +71,7 @@ python web_demo.py
 
 这个方法并没有训练，没有修改官方发布的权重，而只是对推理的函数做了修改。
 
-续写的原理是，将用户的输入直接设置为 `history[-1][1]`，模拟模型自己的部分输出，然后继续走之后的推理函数 `stream_chat_continue`。
+续写的原理是，将用户的输入直接设置为 `history[-1][1]`，模拟模型自己的部分输出，然后继续走之后的推理函数 `stream_chat_continue` [code](https://github.com/ypwhs/CreativeChatGLM/blob/a5c6dd1/chatglm/modeling_chatglm.py#L1158)。
 
-修订的原理是，将用户的输入直接设置为 `history[-1][1]`，模拟模型自己的完成输出，但是不走推理函数。
+修订的原理是，将用户的输入直接设置为 `history[-1][1]`，模拟模型自己的完整输出，但是不走推理函数。
 
