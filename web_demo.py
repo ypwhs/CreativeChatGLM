@@ -1,6 +1,6 @@
 import gradio as gr
 
-debug = True
+debug = False
 
 if debug:
 
@@ -29,18 +29,32 @@ else:
     def inference(input, max_length, top_p, temperature, history=None):
         if history is None:
             history = []
-        for response, history in model.stream_chat(tokenizer, input, history, max_length=max_length, top_p=top_p,
-                                                   temperature=temperature):
+        for response, history in model.stream_chat_continue(tokenizer, input, history, max_length=max_length,
+                                                            top_p=top_p, temperature=temperature):
             yield response
 
 
-def predict(input, max_length, top_p, temperature, history):
+def predict(query, max_length, top_p, temperature, history):
     if history is None:
         history = []
-    history.append((input, ""))
-    for response in inference(input, max_length, top_p, temperature, history):
+    history.append((query, ""))
+    for response in inference(query, max_length, top_p, temperature, history):
         history[-1] = (history[-1][0], response)
-        yield history, ''
+        yield history, '', ''
+
+
+def predict_continue(query, latest_message, max_length, top_p, temperature, history):
+    if history is None:
+        history = []
+    history.append((query, latest_message))
+    for response in inference(query, max_length, top_p, temperature, history):
+        history[-1] = (history[-1][0], response)
+        yield history, '', ''
+
+
+def revise(history, latest_message):
+    history[-1] = (history[-1][0], latest_message)
+    return history
 
 
 MAX_TURNS = 20
@@ -68,14 +82,19 @@ with gr.Blocks(css=""".message {
                 top_p = gr.Slider(0.01, 1, value=0.7, step=0.01, label="Top P", interactive=True)
                 temperature = gr.Slider(0.01, 5, value=0.95, step=0.01, label="Temperature", interactive=True)
             with gr.Row():
-                txt = gr.Textbox(
-                    show_label=False, placeholder="Enter text and press enter", lines=4).style(container=False)
+                query = gr.Textbox(show_label=False, placeholder="Prompts", lines=4).style(container=False)
                 generate_button = gr.Button("Generate")
             with gr.Row():
-                latest_message = gr.Textbox(show_label=False, lines=4).style(container=False)
+                latest_message = gr.Textbox(show_label=False, placeholder="Response", lines=4).style(container=False)
                 revise_btn = gr.Button("修订")
                 continue_btn = gr.Button("续写")
 
     history = gr.State([])
-    generate_button.click(predict, inputs=[txt, max_length, top_p, temperature, history], outputs=[chatbot, txt])
+    generate_button.click(
+        predict, inputs=[query, max_length, top_p, temperature, history], outputs=[chatbot, query, latest_message])
+    revise_btn.click(revise, inputs=[history, latest_message], outputs=[chatbot])
+    continue_btn.click(
+        predict_continue,
+        inputs=[query, latest_message, max_length, top_p, temperature, history],
+        outputs=[chatbot, query, latest_message])
 demo.queue().launch(server_name='0.0.0.0', server_port=7860, share=False, inbrowser=False)
