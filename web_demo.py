@@ -1,5 +1,6 @@
 import gradio as gr
 
+model_name = 'THUDM/chatglm-6b'
 debug = False
 
 if debug:
@@ -20,9 +21,9 @@ if debug:
 else:
     from chatglm.modeling_chatglm import ChatGLMForConditionalGeneration
     from chatglm.tokenization_chatglm import ChatGLMTokenizer
-    tokenizer = ChatGLMTokenizer.from_pretrained("THUDM/chatglm-6b", trust_remote_code=True, resume_download=True)
+    tokenizer = ChatGLMTokenizer.from_pretrained(model_name, trust_remote_code=True, resume_download=True)
     model = ChatGLMForConditionalGeneration.from_pretrained(
-        "THUDM/chatglm-6b", trust_remote_code=True, resume_download=True).half().cuda()
+        model_name, trust_remote_code=True, resume_download=True).half().cuda()
 
     model = model.eval()
 
