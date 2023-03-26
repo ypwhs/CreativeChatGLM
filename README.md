@@ -29,7 +29,7 @@
 
 它就会回答：“我今年15岁。”
 
-![image](https://user-images.githubusercontent.com/10473170/227776976-520da2d7-f0af-4a11-ab49-281c9eed66c5.png)
+![image](https://user-images.githubusercontent.com/10473170/227777136-e2a176f8-6742-41a9-abaf-72a9540b834d.png)
 
 ### 使用视频
 
