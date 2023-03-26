@@ -27,6 +27,7 @@
 
 ### 使用视频
 
+![ChatGLM2](https://user-images.githubusercontent.com/10473170/227778636-a8fcd650-eeeb-44e5-8f24-9260b27cce5d.gif)
 
 ## 修订
 
