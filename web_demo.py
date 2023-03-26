@@ -86,13 +86,15 @@ with gr.Blocks(css=""".message {
                 generate_button = gr.Button("Generate")
             with gr.Row():
                 latest_message = gr.Textbox(show_label=False, placeholder="Response", lines=4).style(container=False)
-                revise_btn = gr.Button("修订")
                 continue_btn = gr.Button("续写")
+                revise_btn = gr.Button("修订")
+                revoke_btn = gr.Button("撤回")
 
     history = gr.State([])
     generate_button.click(
         predict, inputs=[query, max_length, top_p, temperature, history], outputs=[chatbot, query, latest_message])
     revise_btn.click(revise, inputs=[history, latest_message], outputs=[chatbot])
+    revoke_btn.click(lambda history: history[:-1], inputs=[history], outputs=[chatbot])
     continue_btn.click(
         predict_continue,
         inputs=[query, latest_message, max_length, top_p, temperature, history],
