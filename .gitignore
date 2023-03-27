@@ -5,6 +5,7 @@
 *.c
 release
 server_config
+.venv
 
 *egg-info
 configs/
