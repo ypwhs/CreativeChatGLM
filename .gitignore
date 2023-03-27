@@ -7,6 +7,8 @@ release
 server_config
 .venv
 python
+system
+venv
 
 *egg-info
 configs/
