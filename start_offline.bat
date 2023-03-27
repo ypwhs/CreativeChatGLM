@@ -2,8 +2,10 @@
 
 cd %~dp0
 
-set PYTHON=python
-set MAIN_SCRIPT=web_demo.py
+echo Setup offline environment
+call offline_environment.bat
 
-%PYTHON% %MAIN_SCRIPT% %*
+echo Start web_demo.py
+python web_demo.py %*
+
 pause
