@@ -1,6 +1,6 @@
 import gradio as gr
 
-model_name = 'THUDM/chatglm-6b'
+model_name = 'THUDM/chatglm-6b-int4'
 debug = False
 
 if debug:
