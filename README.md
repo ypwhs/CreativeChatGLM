@@ -15,6 +15,14 @@
 * 没有Python经验，不会搭建环境
 * 网络环境不好，配置环境、下载模型速度慢
 
+| 名称 | 文件名 | 大小 | 百度网盘 | 阿里云盘 | 备注 |
+| ---- | ---- | ---- | ---- | ---- | ---- |
+| **小显存离线包** | CreativeChatGLM_py310_<br/>torch200_chatglm_6b_int4.zip | 5.55 GB | [点击下载](https://pan.baidu.com/s/1I_KqxWyjO1ksL-wzXZ0JCA?pwd=cglm) |  | 使用 ChatGLM-6B-int4 权重的离线包，<br/>显存需求 8GB |
+| 大显存离线包 | CreativeChatGLM_py310_<br/>torch200_chatglm_6b.zip | 14.3 GB |  |  | 使用 ChatGLM-6B 权重的离线包，<br/>显存需求 16GB |
+| 环境离线包 | CreativeChatGLM_py310_<br/>torch200_chatglm_6b.zip | 2.56 GB |  |  | 不带权重的离线包，启动之后可以<br/>自动下载模型，默认自动下载 <br/>ChatGLM-6B 权重。 |
+| ChatGLM-6B | chatglm-6b.zip | 11.7 GB |  |  | [THUDM/chatglm-6b](https://huggingface.co/THUDM/chatglm-6b) |
+| ChatGLM-6B-int4 | chatglm-6b.zip | 2.99 GB | [点击下载](https://pan.baidu.com/s/1TXlGUKxKr7EM4oaKWiVSqw?pwd=cglm) |  | [THUDM/chatglm-6b-int4](https://huggingface.co/THUDM/chatglm-6b-int4) |
+
 <details><summary>点击查看详细步骤</summary>
 
 下载好环境包之后，解压，然后运行 `start_offline.bat` 脚本，即可启动服务：
