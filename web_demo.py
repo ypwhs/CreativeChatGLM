@@ -1,3 +1,10 @@
+from utils import collect_env
+
+print('Collect environment info'.center(64, '-'))
+for name, val in collect_env().items():
+    print(f'{name}: {val}')
+print('Done'.center(64, '-'))
+
 import gradio as gr
 
 model_name = 'THUDM/chatglm-6b-int4'
