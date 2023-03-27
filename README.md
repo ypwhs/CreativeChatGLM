@@ -23,6 +23,11 @@
 | ChatGLM-6B | chatglm-6b.zip | 11.7 GB |  |  | [THUDM/chatglm-6b](https://huggingface.co/THUDM/chatglm-6b) |
 | ChatGLM-6B-int4 | chatglm-6b.zip | 2.99 GB | [点击下载](https://pan.baidu.com/s/1TXlGUKxKr7EM4oaKWiVSqw?pwd=cglm) |  | [THUDM/chatglm-6b-int4](https://huggingface.co/THUDM/chatglm-6b-int4) |
 
+如果上面没有你想要的，可以在这里看看：
+
+* 百度网盘链接：[https://pan.baidu.com/s/1pnIEj66scZOswHm8oivXmw?pwd=cglm](https://pan.baidu.com/s/1pnIEj66scZOswHm8oivXmw?pwd=cglm)
+* 阿里云盘链接：[https://www.aliyundrive.com/s/7UsJagnwVeu](https://www.aliyundrive.com/s/7UsJagnwVeu)
+
 <details><summary>点击查看详细步骤</summary>
 
 下载好环境包之后，解压，然后运行 `start_offline.bat` 脚本，即可启动服务：
