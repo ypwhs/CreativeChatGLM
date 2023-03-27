@@ -1,7 +1,7 @@
 cd /D "%~dp0"
 
-echo "Setup VENV"
-call ../environment.bat
+echo Setup offline environment
+call offline_environment.bat
 
 python %PIP_INSTALLER_LOCATION%
 
