@@ -72,10 +72,12 @@ with gr.Blocks(css=""".message {
     padding-left: 20px !important;
 }""") as demo:
     gr.Markdown(
-        """
+        f"""
 # 💡Creative ChatGLM WebUI
 
 👋 欢迎来到 ChatGLM 创意世界！[https://github.com/ypwhs/CreativeChatGLM](https://github.com/ypwhs/CreativeChatGLM)
+
+当前模型：{model_name}
 
 * 📖 你可以使用“续写”按钮帮 ChatGLM 想一个开头，并让它继续生成更多的内容。
 * 📝 你可以使用“修订”按钮修改最后一句 ChatGLM 的回复。
