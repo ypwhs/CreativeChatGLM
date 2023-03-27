@@ -75,3 +75,6 @@ python web_demo.py
 
 修订的原理是，将用户的输入直接设置为 `history[-1][1]`，模拟模型自己的完整输出，但是不走推理函数。
 
+## 协议
+
+本仓库的代码依照 [Apache-2.0](LICENSE) 协议开源，ChatGLM-6B 模型的权重的使用则需要遵循 [Model License](MODEL_LICENSE)。
