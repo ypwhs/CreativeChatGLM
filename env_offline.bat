@@ -1,5 +1,7 @@
 @echo off
 
+echo Activate offline environment
+
 set DIR=%~dp0system
 
 set PATH=C:\Windows\system32;C:\Windows;%DIR%\git\bin;%DIR%\python;%DIR%\python\Scripts;%DIR%\python\Lib\site-packages\torch\lib
