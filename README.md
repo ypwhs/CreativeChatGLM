@@ -7,13 +7,45 @@
 
 # 环境配置
 
+## 离线包
+
+此安装方法适合：
+
+* 非开发人员，不需要写代码
+* 没有Python经验，不会搭建环境
+* 网络环境不好，配置环境、下载模型速度慢
+
+<details><summary>点击查看详细步骤</summary>
+
+下载好环境包之后，解压，然后运行 `start_offline.bat` 脚本，即可启动服务：
+
+![image](https://user-images.githubusercontent.com/10473170/227984407-cdf8ba61-e4e0-4838-a34f-07de18cb37fc.png)
+
+</details>
+
+## 虚拟环境
+
+此安装方法适合已经安装了 Python，但是希望环境与系统已安装的 Python 环境隔离的用户。
+
+<details><summary>点击查看详细步骤</summary>
+
+首先启动 `setup_venv.bat` 脚本，安装环境：
+
+![image](https://user-images.githubusercontent.com/10473170/227982667-a8090ffa-f836-4ebc-93a1-91ab39d9259b.png)
+
+然后使用 `start_venv.bat` 脚本启动服务：
+
+![image](https://user-images.githubusercontent.com/10473170/227983154-27ed9751-b9c3-44ec-9583-31f192955b11.png)
+
+</details>
+
+## Python 开发环境
+
+此项配置方法适合代码开发人员，使用的是自己系统里安装的 Python。
+
 环境配置参考官方链接：[https://github.com/THUDM/ChatGLM-6B](https://github.com/THUDM/ChatGLM-6B)
 
-配置好之后，直接运行 `web_demo.py` 即可：
-
-```bash
-python web_demo.py
-```
+配置好之后，运行 `web_demo.py` 开始使用，或者使用 IDE 开始开发。
 
 # 用法介绍
 
