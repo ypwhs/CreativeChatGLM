@@ -9,6 +9,7 @@ server_config
 python
 system
 venv
+THUDM
 
 *egg-info
 configs/
