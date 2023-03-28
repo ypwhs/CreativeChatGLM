@@ -7,15 +7,15 @@ print('Done'.center(64, '-'))
 
 import gradio as gr
 
-model_name = 'THUDM/chatglm-6b-int4'
+model_name = 'THUDM/chatglm-6b'
 debug = False
 
 if debug:
 
-    def load_model():
+    def load_model(*args, **kwargs):
         pass
 
-    def inference(input, max_length, top_p, temperature, history=None):
+    def inference(*args, **kwargs):
         import random
         sample_outputs = [
             '我是杨开心。',
@@ -34,30 +34,38 @@ else:
 
     model = model.eval()
 
-    def inference(input, max_length, top_p, temperature, history=None):
+    def inference(input, max_length, top_p, temperature, allow_generate, history=None):
         if history is None:
             history = []
         for response, history in model.stream_chat_continue(tokenizer, input, history, max_length=max_length,
                                                             top_p=top_p, temperature=temperature):
             yield response
+            if not allow_generate[0]:
+                break
 
 
-def predict(query, max_length, top_p, temperature, history):
+def predict(query, max_length, top_p, temperature, allow_generate, history):
     if history is None:
         history = []
+    allow_generate[0] = True
     history.append((query, ""))
-    for response in inference(query, max_length, top_p, temperature, history):
+    for response in inference(query, max_length, top_p, temperature, allow_generate, history):
         history[-1] = (history[-1][0], response)
         yield history, ''
+        if not allow_generate[0]:
+            break
 
 
-def predict_continue(query, latest_message, max_length, top_p, temperature, history):
+def predict_continue(query, latest_message, max_length, top_p, temperature, allow_generate, history):
     if history is None:
         history = []
+    allow_generate[0] = True
     history.append((query, latest_message))
-    for response in inference(query, max_length, top_p, temperature, history):
+    for response in inference(query, max_length, top_p, temperature, allow_generate, history):
         history[-1] = (history[-1][0], response)
         yield history, '', ''
+        if not allow_generate[0]:
+            break
 
 
 def revise(history, latest_message):
@@ -69,6 +77,10 @@ def revoke(history):
     if len(history) >= 1:
         history.pop()
     return history
+
+
+def interrupt(allow_generate):
+    allow_generate[0] = False
 
 
 MAX_TURNS = 20
@@ -108,13 +120,19 @@ with gr.Blocks(css=""".message {
                     show_label=False, placeholder="Revise message", lines=2).style(container=False)
                 revise_btn = gr.Button("修订")
                 revoke_btn = gr.Button("撤回")
+                interrupt_btn = gr.Button("终止生成")
 
     history = gr.State([])
-    generate_button.click(predict, inputs=[query, max_length, top_p, temperature, history], outputs=[chatbot, query])
+    allow_generate = gr.State([True])
+    generate_button.click(
+        predict,
+        inputs=[query, max_length, top_p, temperature, allow_generate, history],
+        outputs=[chatbot, query])
     revise_btn.click(revise, inputs=[history, revise_message], outputs=[chatbot, revise_message])
     revoke_btn.click(revoke, inputs=[history], outputs=[chatbot])
     continue_btn.click(
         predict_continue,
-        inputs=[query, continue_message, max_length, top_p, temperature, history],
+        inputs=[query, continue_message, max_length, top_p, temperature, allow_generate, history],
         outputs=[chatbot, query, continue_message])
-demo.queue().launch(server_name='0.0.0.0', server_port=7860, share=False, inbrowser=False)
+    interrupt_btn.click(interrupt, inputs=[allow_generate])
+demo.queue(concurrency_count=4).launch(server_name='0.0.0.0', server_port=7860, share=False, inbrowser=False)
