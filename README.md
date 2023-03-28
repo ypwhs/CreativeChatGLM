@@ -17,11 +17,11 @@
 
 | 名称 | 文件名 | 大小 | 百度网盘 | 备注 |
 | ---- | ---- | ---- | ---- | ---- |
-| **小显存离线包** | CreativeChatGLM_py310_<br/>torch200_chatglm_6b_int4.zip | 5.55 GB | [点击下载](https://pan.baidu.com/s/1I_KqxWyjO1ksL-wzXZ0JCA?pwd=cglm) | 使用 ChatGLM-6B-int4 权重的离线包，<br/>显存需求 8GB |
-| 大显存离线包 | CreativeChatGLM_py310_<br/>torch200_chatglm_6b.zip | 14.3 GB | [点击下载](https://pan.baidu.com/s/1wPldt4CY783-JOF80eF7bg?pwd=cglm) | 使用 ChatGLM-6B 权重的离线包，<br/>显存需求 16GB |
-| 环境离线包 | CreativeChatGLM_py310_<br/>torch200_chatglm_6b.zip | 2.56 GB | [点击下载](https://pan.baidu.com/s/1v3RWNFCIBQGe0yPBfYTjxQ?pwd=cglm) | 不带权重的离线包，启动之后可以<br/>自动下载模型，默认自动下载 <br/>ChatGLM-6B 权重。 |
+| **小显存离线包** | CreativeChatGLM_<br/>py310_torch200_<br/>chatglm_6b_int4.zip | 5.55 GB | [点击下载](https://pan.baidu.com/s/1I_KqxWyjO1ksL-wzXZ0JCA?pwd=cglm) | 使用 ChatGLM-6B-int4 权重的离线包，<br/>显存需求 8GB |
+| 大显存离线包 | CreativeChatGLM_<br/>py310_torch200_<br/>chatglm_6b.zip | 14.3 GB | [点击下载](https://pan.baidu.com/s/1wPldt4CY783-JOF80eF7bg?pwd=cglm) | 使用 ChatGLM-6B 权重的离线包，<br/>显存需求 16GB |
+| 环境离线包 | CreativeChatGLM_<br/>py310_torch200_<br/>chatglm_6b.zip | 2.56 GB | [点击下载](https://pan.baidu.com/s/1v3RWNFCIBQGe0yPBfYTjxQ?pwd=cglm) | 不带权重的离线包，启动之后可以<br/>自动下载模型，默认自动下载 <br/>ChatGLM-6B 权重。 |
 | ChatGLM-6B | chatglm-6b.zip | 11.7 GB | [点击下载](https://pan.baidu.com/s/1gqG9a_nnglRouA8yF9KPgA?pwd=cglm) | [THUDM/chatglm-6b](https://huggingface.co/THUDM/chatglm-6b) |
-| ChatGLM-6B-int4 | chatglm-6b.zip | 2.99 GB | [点击下载](https://pan.baidu.com/s/1TXlGUKxKr7EM4oaKWiVSqw?pwd=cglm) | [THUDM/chatglm-6b-int4](https://huggingface.co/THUDM/chatglm-6b-int4) |
+| ChatGLM-6B-int4 | chatglm-6b-int4.zip | 2.99 GB | [点击下载](https://pan.baidu.com/s/1TXlGUKxKr7EM4oaKWiVSqw?pwd=cglm) | [THUDM/chatglm-6b-int4](https://huggingface.co/THUDM/chatglm-6b-int4) |
 
 如果上面没有你想要的，可以在这里看看：
 
