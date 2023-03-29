@@ -10,8 +10,6 @@ model_name_list = [
     'BelleGroup/BELLE-7B-gptq',
     'BelleGroup/BELLE-LLAMA-7B-2M',
     'BelleGroup/BELLE-LLAMA-7B-2M-gptq',
-    'BelleGroup/generated_train_1M_CN',
-
 ]
 
 for model_name in model_name_list:
