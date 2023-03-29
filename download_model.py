@@ -6,6 +6,12 @@ model_name_list = [
     'THUDM/chatglm-6b-int4',
     'THUDM/chatglm-6b-int4-qe',
     'THUDM/glm-10b-chinese',
+    'BelleGroup/BELLE-7B-2M',
+    'BelleGroup/BELLE-7B-gptq',
+    'BelleGroup/BELLE-LLAMA-7B-2M',
+    'BelleGroup/BELLE-LLAMA-7B-2M-gptq',
+    'BelleGroup/generated_train_1M_CN',
+
 ]
 
 for model_name in model_name_list:
