@@ -28,7 +28,7 @@ for model_name in model_name_list:
             )
             snapshot_download(
                 repo_id=model_name,
-                local_dir=model_name,
+                local_dir=f'models/{model_name}',
                 local_dir_use_symlinks=False,
             )
             break
