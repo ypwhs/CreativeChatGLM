@@ -15,7 +15,8 @@ model_name_list = [
 ]
 
 for model_name in model_name_list:
-    if glob(f'{model_name}/*.bin') or glob(f'{model_name}/*.pt'):
+    dst_path = f'models/{model_name}'
+    if glob(f'{dst_path}/*.bin') or glob(f'{dst_path}/*.pt'):
         print(f'{model_name} already downloaded')
         continue
     retry_times = 10
@@ -28,7 +29,7 @@ for model_name in model_name_list:
             )
             snapshot_download(
                 repo_id=model_name,
-                local_dir=f'models/{model_name}',
+                local_dir=dst_path,
                 local_dir_use_symlinks=False,
             )
             break
