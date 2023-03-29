@@ -26,19 +26,21 @@ if debug:
         for i in range(len(one_output)):
             yield one_output[:i + 1]
 else:
-    from chatglm.modeling_chatglm import ChatGLMForConditionalGeneration
-    from chatglm.tokenization_chatglm import ChatGLMTokenizer
-    tokenizer = ChatGLMTokenizer.from_pretrained(model_name, trust_remote_code=True, resume_download=True)
-    model = ChatGLMForConditionalGeneration.from_pretrained(
-        model_name, trust_remote_code=True, resume_download=True).half().cuda()
+    from transformers import AutoModel, AutoTokenizer
+    from utils_inference import stream_chat_continue
 
+    print('Loading model')
+    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, resume_download=True)
+    model = AutoModel.from_pretrained(model_name, trust_remote_code=True, resume_download=True).half().cuda()
     model = model.eval()
+    print(f'Successfully loaded model {model_name}')
 
     def inference(input, max_length, top_p, temperature, allow_generate, history=None):
         if history is None:
             history = []
-        for response, history in model.stream_chat_continue(tokenizer, input, history, max_length=max_length,
-                                                            top_p=top_p, temperature=temperature):
+        for response, history in stream_chat_continue(
+                model, tokenizer, input, history, max_length=max_length,
+                top_p=top_p, temperature=temperature):
             yield response
             if not allow_generate[0]:
                 break
