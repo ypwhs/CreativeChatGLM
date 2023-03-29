@@ -10,6 +10,7 @@ python
 system
 venv
 THUDM
+BelleGroup
 
 *egg-info
 configs/
