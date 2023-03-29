@@ -13,7 +13,7 @@ model_name_list = [
 ]
 
 for model_name in model_name_list:
-    if glob(f'{model_name}/*.bin'):
+    if glob(f'{model_name}/*.bin') or glob(f'{model_name}/*.pt'):
         print(f'{model_name} already downloaded')
         continue
     retry_times = 10
@@ -22,9 +22,12 @@ for model_name in model_name_list:
             print(f'Downloading {model_name}')
             snapshot_download(
                 repo_id=model_name,
+                resume_download=True,
+            )
+            snapshot_download(
+                repo_id=model_name,
                 local_dir=model_name,
                 local_dir_use_symlinks=False,
-                resume_download=True,
             )
             break
         except:
