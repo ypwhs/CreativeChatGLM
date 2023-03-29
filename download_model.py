@@ -16,10 +16,10 @@ for model_name in model_name_list:
     if glob(f'{model_name}/*.bin'):
         print(f'{model_name} already downloaded')
         continue
-    print(f'Downloading {model_name}')
     retry_times = 10
     while retry_times > 0:
         try:
+            print(f'Downloading {model_name}')
             snapshot_download(
                 repo_id=model_name,
                 local_dir=model_name,
@@ -29,5 +29,5 @@ for model_name in model_name_list:
             break
         except:
             retry_times -= 1
-            print(f'Retry download {model_name}')
+            print(f'Retry download {model_name}, {retry_times} times left...')
     print(f'{model_name} downloaded')
