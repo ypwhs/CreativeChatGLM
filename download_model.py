@@ -17,8 +17,17 @@ for model_name in model_name_list:
         print(f'{model_name} already downloaded')
         continue
     print(f'Downloading {model_name}')
-    snapshot_download(
-        repo_id=model_name,
-        local_dir=model_name,
-        local_dir_use_symlinks=False)
+    retry_times = 10
+    while retry_times > 0:
+        try:
+            snapshot_download(
+                repo_id=model_name,
+                local_dir=model_name,
+                local_dir_use_symlinks=False,
+                resume_download=True,
+            )
+            break
+        except:
+            retry_times -= 1
+            print(f'Retry download {model_name}')
     print(f'{model_name} downloaded')
