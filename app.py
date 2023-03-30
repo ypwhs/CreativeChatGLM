@@ -31,16 +31,17 @@ else:
 
     print('Loading model')
     tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, resume_download=True)
-    model = AutoModel.from_pretrained(model_name, trust_remote_code=True, resume_download=True).half().cuda()
+    model = AutoModel.from_pretrained(
+        model_name, trust_remote_code=True, resume_download=True, device_map='auto',
+        low_cpu_mem_usage=True).half().cuda()
     model = model.eval()
     print(f'Successfully loaded model {model_name}')
 
     def inference(input, max_length, top_p, temperature, allow_generate, history=None):
         if history is None:
             history = []
-        for response, history in stream_chat_continue(
-                model, tokenizer, input, history, max_length=max_length,
-                top_p=top_p, temperature=temperature):
+        for response, history in stream_chat_continue(model, tokenizer, input, history, max_length=max_length,
+                                                      top_p=top_p, temperature=temperature):
             yield response
             if not allow_generate[0]:
                 break
@@ -127,9 +128,7 @@ with gr.Blocks(css=""".message {
     history = gr.State([])
     allow_generate = gr.State([True])
     generate_button.click(
-        predict,
-        inputs=[query, max_length, top_p, temperature, allow_generate, history],
-        outputs=[chatbot, query])
+        predict, inputs=[query, max_length, top_p, temperature, allow_generate, history], outputs=[chatbot, query])
     revise_btn.click(revise, inputs=[history, revise_message], outputs=[chatbot, revise_message])
     revoke_btn.click(revoke, inputs=[history], outputs=[chatbot])
     continue_btn.click(
