@@ -57,7 +57,7 @@
 
 环境配置参考官方链接：[https://github.com/THUDM/ChatGLM-6B](https://github.com/THUDM/ChatGLM-6B)
 
-配置好之后，运行 `web_demo.py` 开始使用，或者使用 IDE 开始开发。
+配置好之后，运行 `app.py` 开始使用，或者使用 IDE 开始开发。
 
 # 用法介绍
 
