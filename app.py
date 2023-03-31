@@ -8,6 +8,7 @@ print('Done'.center(64, '-'))
 
 
 model_name = 'BelleGroup/BELLE-7B-2M'
+model_name = 'THUDM/chatglm-6b'
 
 if 'chatglm' in model_name.lower():
     from predictors.chatglm import ChatGLM
