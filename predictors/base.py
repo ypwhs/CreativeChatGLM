@@ -19,7 +19,7 @@ class BasePredictor(ABC):
             history = []
         allow_generate[0] = True
         history.append((query, latest_message))
-        for response, history in self.stream_chat_continue(
+        for response in self.stream_chat_continue(
                 self.model,
                 self.tokenizer,
                 query=query,
