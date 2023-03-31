@@ -8,11 +8,15 @@ class LLaMa(BasePredictor):
 
     def __init__(self, model_name):
         self.model_name = model_name
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_name, resume_download=True)
         self.model = LlamaForCausalLM.from_pretrained(
-            model_name, low_cpu_mem_usage=True, resume_download=True)
-        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+            model_name,
+            low_cpu_mem_usage=True,
+            resume_download=True,
+            torch_dtype=torch.float16 if self.device == 'cuda' else torch.float32,
+            device_map={'': self.device})
         self.model.to(self.device)
         self.model.eval()
 
