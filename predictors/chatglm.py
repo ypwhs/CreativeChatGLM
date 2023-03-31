@@ -34,54 +34,6 @@ class ChatGLM:
         self.model = model
         print(f'Successfully loaded model {model_name}')
 
-    def inference(self,
-                  input,
-                  max_length,
-                  top_p,
-                  temperature,
-                  allow_generate,
-                  history=None):
-        if history is None:
-            history = []
-        for response, history in self.stream_chat_continue(
-                self.model,
-                self.tokenizer,
-                input,
-                history,
-                max_length=max_length,
-                top_p=top_p,
-                temperature=temperature):
-            yield response
-            if not allow_generate[0]:
-                break
-
-    def predict_continue(self, query, latest_message, max_length, top_p,
-                         temperature, allow_generate, history, *args,
-                         **kwargs):
-        if history is None:
-            history = []
-        allow_generate[0] = True
-        history.append((query, latest_message))
-        for response in self.inference(query, max_length, top_p, temperature,
-                                       allow_generate, history):
-            history[-1] = (history[-1][0], response)
-            yield history, '', ''
-            if not allow_generate[0]:
-                break
-
-    def predict(self, query, max_length, top_p, temperature, allow_generate,
-                history, *args, **kwargs):
-        yield from self.predict_continue(
-            query=query,
-            latest_message='',
-            max_length=max_length,
-            top_p=top_p,
-            temperature=temperature,
-            allow_generate=allow_generate,
-            history=history,
-            *args,
-            **kwargs)
-
     @torch.no_grad()
     def stream_chat_continue(self,
                              model,
@@ -141,5 +93,24 @@ class ChatGLM:
             outputs = outputs.tolist()[0][input_length:]
             response = tokenizer.decode(outputs)
             response = model.process_response(response)
-            new_history = history + [(query, response)]
-            yield response, new_history
+            yield response
+
+    def predict_continue(self, query, latest_message, max_length, top_p,
+                         temperature, allow_generate, history, *args,
+                         **kwargs):
+        if history is None:
+            history = []
+        allow_generate[0] = True
+        history.append((query, latest_message))
+        for response in self.stream_chat_continue(
+                self.model,
+                self.tokenizer,
+                query,
+                history,
+                max_length=max_length,
+                top_p=top_p,
+                temperature=temperature):
+            history[-1] = (history[-1][0], response)
+            yield history, '', ''
+            if not allow_generate[0]:
+                break

@@ -7,7 +7,7 @@ for name, val in collect_env().items():
 print('Done'.center(64, '-'))
 
 
-model_name = 'BelleGroup/BELLE-7B-2M'
+model_name = 'THUDM/chatglm-6b'
 
 if 'chatglm' in model_name.lower():
     from predictors.chatglm import ChatGLM
@@ -79,8 +79,11 @@ with gr.Blocks(css=""".message {
 
     history = gr.State([])
     allow_generate = gr.State([True])
+    blank_input = gr.State("")
     generate_button.click(
-        predictor.predict, inputs=[query, max_length, top_p, temperature, allow_generate, history], outputs=[chatbot, query])
+        predictor.predict_continue,
+        inputs=[query, blank_input, max_length, top_p, temperature, allow_generate, history],
+        outputs=[chatbot, query])
     revise_btn.click(revise, inputs=[history, revise_message], outputs=[chatbot, revise_message])
     revoke_btn.click(revoke, inputs=[history], outputs=[chatbot])
     continue_btn.click(
