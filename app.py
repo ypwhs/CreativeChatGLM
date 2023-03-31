@@ -1,3 +1,4 @@
+import gradio as gr
 from utils_env import collect_env
 
 print('Collect environment info'.center(64, '-'))
@@ -5,70 +6,24 @@ for name, val in collect_env().items():
     print(f'{name}: {val}')
 print('Done'.center(64, '-'))
 
-import gradio as gr
 
 model_name = 'THUDM/chatglm-6b'
-debug = False
 
-if debug:
-
-    def load_model(*args, **kwargs):
-        pass
-
-    def inference(*args, **kwargs):
-        import random
-        sample_outputs = [
-            '我是杨开心。',
-            '我两岁半了。',
-            '我喜欢吃雪糕。',
-        ]
-        one_output = random.choice(sample_outputs)
-        for i in range(len(one_output)):
-            yield one_output[:i + 1]
+if 'chatglm' in model_name.lower():
+    from predictors.chatglm import ChatGLM
+    predictor = ChatGLM(model_name)
+elif 'llama' in model_name.lower():
+    from predictors.llama import Llama
+    predictor = Llama(model_name)
+elif 'belle' in model_name.lower():
+    from predictors.belle import Belle
+    predictor = Belle(model_name)
+elif 'debug' in model_name.lower():
+    from predictors.debug import Debug
+    predictor = Debug(model_name)
 else:
-    from transformers import AutoModel, AutoTokenizer
-    from utils_inference import stream_chat_continue
-
-    print('Loading model')
-    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, resume_download=True)
-    model = AutoModel.from_pretrained(
-        model_name, trust_remote_code=True, resume_download=True, device_map='auto',
-        low_cpu_mem_usage=True).half().cuda()
-    model = model.eval()
-    print(f'Successfully loaded model {model_name}')
-
-    def inference(input, max_length, top_p, temperature, allow_generate, history=None):
-        if history is None:
-            history = []
-        for response, history in stream_chat_continue(model, tokenizer, input, history, max_length=max_length,
-                                                      top_p=top_p, temperature=temperature):
-            yield response
-            if not allow_generate[0]:
-                break
-
-
-def predict(query, max_length, top_p, temperature, allow_generate, history):
-    if history is None:
-        history = []
-    allow_generate[0] = True
-    history.append((query, ""))
-    for response in inference(query, max_length, top_p, temperature, allow_generate, history):
-        history[-1] = (history[-1][0], response)
-        yield history, ''
-        if not allow_generate[0]:
-            break
-
-
-def predict_continue(query, latest_message, max_length, top_p, temperature, allow_generate, history):
-    if history is None:
-        history = []
-    allow_generate[0] = True
-    history.append((query, latest_message))
-    for response in inference(query, max_length, top_p, temperature, allow_generate, history):
-        history[-1] = (history[-1][0], response)
-        yield history, '', ''
-        if not allow_generate[0]:
-            break
+    from predictors.chatglm import ChatGLM
+    predictor = ChatGLM(model_name)
 
 
 def revise(history, latest_message):
@@ -85,9 +40,6 @@ def revoke(history):
 def interrupt(allow_generate):
     allow_generate[0] = False
 
-
-MAX_TURNS = 20
-MAX_BOXES = MAX_TURNS * 2
 
 with gr.Blocks(css=""".message {
     width: inherit !important;
@@ -128,11 +80,11 @@ with gr.Blocks(css=""".message {
     history = gr.State([])
     allow_generate = gr.State([True])
     generate_button.click(
-        predict, inputs=[query, max_length, top_p, temperature, allow_generate, history], outputs=[chatbot, query])
+        predictor.predict, inputs=[query, max_length, top_p, temperature, allow_generate, history], outputs=[chatbot, query])
     revise_btn.click(revise, inputs=[history, revise_message], outputs=[chatbot, revise_message])
     revoke_btn.click(revoke, inputs=[history], outputs=[chatbot])
     continue_btn.click(
-        predict_continue,
+        predictor.predict_continue,
         inputs=[query, continue_message, max_length, top_p, temperature, allow_generate, history],
         outputs=[chatbot, query, continue_message])
     interrupt_btn.click(interrupt, inputs=[allow_generate])
