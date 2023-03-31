@@ -18,13 +18,18 @@ class ChatGLM:
 
     def __init__(self, model_name):
         print('Loading model')
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_name, trust_remote_code=True, resume_download=True)
         model = AutoModel.from_pretrained(
             model_name,
             trust_remote_code=True,
             resume_download=True,
-            low_cpu_mem_usage=True).half().cuda()
+            low_cpu_mem_usage=True)
+        if self.device == 'cuda':
+            model = model.half().to(self.device)
+        else:
+            model = model.float()
         model = model.eval()
         self.model = model
         print(f'Successfully loaded model {model_name}')
@@ -126,7 +131,7 @@ class ChatGLM:
         final_input_ids = torch.cat(
             [batch_input['input_ids'], batch_answer['input_ids'][:, :-2]],
             dim=-1).cuda()
-        attention_mask = torch.ones_like(final_input_ids).bool().cuda()
+        attention_mask = torch.ones_like(final_input_ids).bool().to(model.device)
         attention_mask[:, input_length:] = False
 
         batch_input['input_ids'] = final_input_ids
