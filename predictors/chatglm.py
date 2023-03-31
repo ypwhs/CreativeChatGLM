@@ -24,7 +24,6 @@ class ChatGLM:
             model_name,
             trust_remote_code=True,
             resume_download=True,
-            device_map='auto',
             low_cpu_mem_usage=True).half().cuda()
         model = model.eval()
         self.model = model
