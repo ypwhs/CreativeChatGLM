@@ -52,7 +52,8 @@ class ChatGLM:
                 break
 
     def predict_continue(self, query, latest_message, max_length, top_p,
-                         temperature, allow_generate, history):
+                         temperature, allow_generate, history, *args,
+                         **kwargs):
         if history is None:
             history = []
         allow_generate[0] = True
@@ -64,8 +65,18 @@ class ChatGLM:
             if not allow_generate[0]:
                 break
 
-    def predict(self, *args, **kwargs):
-        yield from self.predict_continue(latest_message='', *args, **kwargs)
+    def predict(self, query, max_length, top_p, temperature, allow_generate,
+                history, *args, **kwargs):
+        yield from self.predict_continue(
+            query=query,
+            latest_message='',
+            max_length=max_length,
+            top_p=top_p,
+            temperature=temperature,
+            allow_generate=allow_generate,
+            history=history,
+            *args,
+            **kwargs)
 
     @torch.no_grad()
     def stream_chat_continue(self,
