@@ -7,31 +7,36 @@ from predictors.base import BasePredictor
 class BELLE:
 
     def __init__(self, model_name):
+        print(f'Loading model {model_name}')
         self.model_name = model_name
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            model_name, resume_download=True)
-        self.model = AutoModel.from_pretrained(
-            model_name, low_cpu_mem_usage=True, resume_download=True)
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        self.model.to(self.device)
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name, resume_download=True)
+        self.model = AutoModel.from_pretrained(
+            model_name,
+            low_cpu_mem_usage=True,
+            resume_download=True,
+            torch_dtype=torch.float16 if self.device == 'cuda' else torch.float32,
+            device_map={'': self.device})
         self.model.eval()
+        print(f'Successfully loaded model {model_name}')
 
     @torch.no_grad()
-    def stream_chat_continue(self,
-                             model,
-                             tokenizer,
-                             query: str,
-                             history: List[Tuple[str, str]] = None,
-                             max_new_tokens=500,
-                             do_sample=True,
-                             top_k=30,
-                             top_p=0.85,
-                             temperature=0.5,
-                             repetition_penalty=1.,
-                             eos_token_id=2,
-                             bos_token_id=1,
-                             pad_token_id=0,
-                             **kwargs):
+    def stream_chat_continue(
+            self,
+            model,
+            tokenizer,
+            query: str,
+            history: List[Tuple[str, str]] = None,
+            max_new_tokens=500,
+            do_sample=True,
+            top_k=30,
+            top_p=0.85,
+            temperature=0.5,
+            repetition_penalty=1.,
+            eos_token_id=2,
+            bos_token_id=1,
+            pad_token_id=0,
+            **kwargs):
         if history is None:
             history = []
         if len(history) > 0:
@@ -66,15 +71,14 @@ class BELLE:
         batch_answer = batch_answer.to(model.device)
 
         input_length = len(batch_input['input_ids'][0])
-        final_input_ids = torch.cat(
-            [batch_input['input_ids'], batch_answer['input_ids'][:, :-2]],
-            dim=-1).cuda()
-        attention_mask = torch.ones_like(final_input_ids).bool().to(
-            model.device)
+        final_input_ids = torch.cat([batch_input['input_ids'], batch_answer['input_ids'][:, :-2]], dim=-1).cuda()
+        attention_mask = torch.ones_like(final_input_ids).bool().to(model.device)
         attention_mask[:, input_length:] = False
 
         batch_input['input_ids'] = final_input_ids
         batch_input['attention_mask'] = attention_mask
+
+        model.generate(**batch_input, **gen_kwargs)
 
         for outputs in model.stream_generate(**batch_input, **gen_kwargs):
             outputs = outputs.tolist()[0][input_length:]
@@ -82,23 +86,3 @@ class BELLE:
             response = model.process_response(response)
             new_history = history + [(query, response)]
             yield response, new_history
-
-    def predict_continue(self, query, latest_message, max_length, top_p,
-                         temperature, allow_generate, history, *args,
-                         **kwargs):
-        if history is None:
-            history = []
-        allow_generate[0] = True
-        history.append((query, latest_message))
-        for response, history in self.stream_chat_continue(
-                self.model,
-                self.tokenizer,
-                query=query,
-                history=history,
-                max_length=max_length,
-                top_p=top_p,
-                temperature=temperature):
-            history[-1] = (history[-1][0], response)
-            yield history, '', ''
-            if not allow_generate[0]:
-                break
