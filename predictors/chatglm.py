@@ -26,11 +26,10 @@ class ChatGLM(BasePredictor):
             model_name,
             trust_remote_code=True,
             resume_download=True,
-            low_cpu_mem_usage=True)
-        if self.device == 'cuda':
-            model = model.half().to(self.device)
-        else:
-            model = model.float()
+            low_cpu_mem_usage=True,
+            torch_dtype=torch.float16 if self.device == 'cuda' else torch.float32,
+            device_map={'': self.device}
+        )
         model = model.eval()
         self.model = model
         print(f'Successfully loaded model {model_name}')
