@@ -18,7 +18,7 @@ class InvalidScoreLogitsProcessor(LogitsProcessor):
 class ChatGLM(BasePredictor):
 
     def __init__(self, model_name):
-        print('Loading model')
+        print(f'Loading model {model_name}')
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_name, trust_remote_code=True, resume_download=True)
