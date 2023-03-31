@@ -12,9 +12,6 @@ model_name = 'BelleGroup/BELLE-7B-2M'
 if 'chatglm' in model_name.lower():
     from predictors.chatglm import ChatGLM
     predictor = ChatGLM(model_name)
-elif 'gptq' in model_name.lower():
-    from predictors.gptq import GPTQ
-    predictor = GPTQ(model_name)
 elif 'belle' in model_name.lower():
     from predictors.belle import BELLE
     predictor = BELLE(model_name)
