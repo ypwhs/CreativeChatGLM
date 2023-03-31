@@ -1,39 +1,20 @@
-from transformers import AutoModel, AutoTokenizer
+from transformers import LlamaForCausalLM, AutoTokenizer
 import torch
 from typing import List, Tuple
-from transformers import LogitsProcessor, LogitsProcessorList
 from predictors.base import BasePredictor
 
 
-class InvalidScoreLogitsProcessor(LogitsProcessor):
-
-    def __call__(self, input_ids: torch.LongTensor,
-                 scores: torch.FloatTensor) -> torch.FloatTensor:
-        if torch.isnan(scores).any() or torch.isinf(scores).any():
-            scores.zero_()
-            scores[..., 20005] = 5e4
-        return scores
-
-
-class ChatGLM(BasePredictor):
+class LLaMa(BasePredictor):
 
     def __init__(self, model_name):
-        print('Loading model')
-        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        self.model_name = model_name
         self.tokenizer = AutoTokenizer.from_pretrained(
-            model_name, trust_remote_code=True, resume_download=True)
-        model = AutoModel.from_pretrained(
-            model_name,
-            trust_remote_code=True,
-            resume_download=True,
-            low_cpu_mem_usage=True)
-        if self.device == 'cuda':
-            model = model.half().to(self.device)
-        else:
-            model = model.float()
-        model = model.eval()
-        self.model = model
-        print(f'Successfully loaded model {model_name}')
+            model_name, resume_download=True)
+        self.model = LlamaForCausalLM.from_pretrained(
+            model_name, low_cpu_mem_usage=True, resume_download=True)
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        self.model.to(self.device)
+        self.model.eval()
 
     @torch.no_grad()
     def stream_chat_continue(self,
@@ -41,39 +22,43 @@ class ChatGLM(BasePredictor):
                              tokenizer,
                              query: str,
                              history: List[Tuple[str, str]] = None,
-                             max_length: int = 2048,
+                             max_new_tokens=500,
                              do_sample=True,
-                             top_p=0.7,
-                             temperature=0.95,
-                             logits_processor=None,
+                             top_k=30,
+                             top_p=0.85,
+                             temperature=0.5,
+                             repetition_penalty=1.,
+                             eos_token_id=2,
+                             bos_token_id=1,
+                             pad_token_id=0,
                              **kwargs):
         if history is None:
             history = []
-        if logits_processor is None:
-            logits_processor = LogitsProcessorList()
         if len(history) > 0:
             answer = history[-1][1]
         else:
             answer = ''
-        logits_processor.append(InvalidScoreLogitsProcessor())
         gen_kwargs = {
-            "max_length": max_length,
+            "max_new_tokens": max_new_tokens,
             "do_sample": do_sample,
             "top_p": top_p,
+            "top_k": top_k,
             "temperature": temperature,
-            "logits_processor": logits_processor,
+            "repetition_penalty": repetition_penalty,
+            "eos_token_id": eos_token_id,
+            "bos_token_id": bos_token_id,
+            "pad_token_id": pad_token_id,
             **kwargs
         }
         if not history:
-            prompt = query
+            prompt = f'Human: {query} \n\nAssistant:'
         else:
             prompt = ""
             for i, (old_query, response) in enumerate(history):
                 if i != len(history) - 1:
-                    prompt += "[Round {}]\n问：{}\n答：{}\n".format(
-                        i, old_query, response)
+                    prompt += f'Human: {old_query} \n\nAssistant:{response} \n\n'
                 else:
-                    prompt += "[Round {}]\n问：{}\n答：".format(i, old_query)
+                    prompt += f'Human: {old_query} \n\nAssistant:'
         batch_input = tokenizer([prompt], return_tensors="pt", padding=True)
         batch_input = batch_input.to(model.device)
 
@@ -84,7 +69,8 @@ class ChatGLM(BasePredictor):
         final_input_ids = torch.cat(
             [batch_input['input_ids'], batch_answer['input_ids'][:, :-2]],
             dim=-1).cuda()
-        attention_mask = torch.ones_like(final_input_ids).bool().to(model.device)
+        attention_mask = torch.ones_like(final_input_ids).bool().to(
+            model.device)
         attention_mask[:, input_length:] = False
 
         batch_input['input_ids'] = final_input_ids
@@ -94,4 +80,5 @@ class ChatGLM(BasePredictor):
             outputs = outputs.tolist()[0][input_length:]
             response = tokenizer.decode(outputs)
             response = model.process_response(response)
-            yield response
+            new_history = history + [(query, response)]
+            yield response, new_history

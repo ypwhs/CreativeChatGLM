@@ -1,6 +1,7 @@
-from transformers import LlamaForCausalLM, AutoTokenizer
+from transformers import AutoModel, AutoTokenizer
 import torch
 from typing import List, Tuple
+from predictors.base import BasePredictor
 
 
 class BELLE:
@@ -9,7 +10,7 @@ class BELLE:
         self.model_name = model_name
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_name, resume_download=True)
-        self.model = LlamaForCausalLM.from_pretrained(
+        self.model = AutoModel.from_pretrained(
             model_name, low_cpu_mem_usage=True, resume_download=True)
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.model.to(self.device)
