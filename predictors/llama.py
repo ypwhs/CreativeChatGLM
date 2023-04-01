@@ -1,12 +1,15 @@
-from transformers import LlamaForCausalLM, AutoTokenizer
+import copy
+import time
+import warnings
+from typing import List, Tuple, Optional, Callable
+
 import torch
 import torch.nn as nn
-from typing import List, Tuple, Optional, Callable
-from predictors.base import BasePredictor
-import copy
-import warnings
-from transformers.utils import logging
+from transformers import LlamaForCausalLM, AutoTokenizer
 from transformers.generation.utils import LogitsProcessorList, StoppingCriteriaList, GenerationConfig
+from transformers.utils import logging
+
+from predictors.base import BasePredictor
 
 logger = logging.get_logger(__name__)
 
@@ -117,6 +120,8 @@ def stream_generate(
 class LLaMa(BasePredictor):
 
     def __init__(self, model_name):
+        print(f'Loading model {model_name}')
+        start = time.perf_counter()
         self.model_name = model_name
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.tokenizer = AutoTokenizer.from_pretrained(
@@ -128,6 +133,8 @@ class LLaMa(BasePredictor):
             torch_dtype=torch.float16 if self.device == 'cuda' else torch.float32,
             device_map={'': self.device})
         self.model.eval()
+        end = time.perf_counter()
+        print(f'Successfully loaded model {model_name}, time cost: {end - start:.2f}s')
 
     @torch.no_grad()
     def stream_chat_continue(self,
