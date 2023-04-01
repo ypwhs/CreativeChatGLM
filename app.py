@@ -14,7 +14,7 @@ model_name = 'THUDM/chatglm-6b'
 # model_name = 'BelleGroup/BELLE-LLAMA-7B-2M-gptq'
 
 if 'chatglm' in model_name.lower():
-    from predictors.chatglm import ChatGLM
+    from predictors.chatglm2 import ChatGLM
     predictor = ChatGLM(model_name)
 elif 'gptq' in model_name.lower():
     from predictors.llama_gptq import LLaMaGPTQ
@@ -26,7 +26,7 @@ elif 'debug' in model_name.lower():
     from predictors.debug import Debug
     predictor = Debug(model_name)
 else:
-    from predictors.chatglm import ChatGLM
+    from predictors.chatglm2 import ChatGLM
     predictor = ChatGLM(model_name)
 
 
