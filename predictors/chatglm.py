@@ -22,14 +22,21 @@ class ChatGLM(BasePredictor):
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_name, trust_remote_code=True, resume_download=True)
-        model = AutoModel.from_pretrained(
-            model_name,
-            trust_remote_code=True,
-            resume_download=True,
-            low_cpu_mem_usage=True,
-            torch_dtype=torch.float16 if self.device == 'cuda' else torch.float32,
-            device_map={'': self.device}
-        )
+        if 'int4' not in model_name:
+            model = AutoModel.from_pretrained(
+                model_name,
+                trust_remote_code=True,
+                resume_download=True,
+                low_cpu_mem_usage=True,
+                torch_dtype=torch.float16 if self.device == 'cuda' else torch.float32,
+                device_map={'': self.device}
+            )
+        else:
+            model = AutoModel.from_pretrained(
+                model_name,
+                trust_remote_code=True,
+                resume_download=True
+            ).half().to(self.device)
         model = model.eval()
         self.model = model
         print(f'Successfully loaded model {model_name}')
