@@ -1,7 +1,10 @@
-from transformers import AutoModel, AutoTokenizer
-import torch
+import time
 from typing import List, Tuple
+
+import torch
+from transformers import AutoModel, AutoTokenizer
 from transformers import LogitsProcessor, LogitsProcessorList
+
 from predictors.base import BasePredictor
 
 
@@ -19,6 +22,7 @@ class ChatGLM(BasePredictor):
 
     def __init__(self, model_name):
         print(f'Loading model {model_name}')
+        start = time.perf_counter()
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_name, trust_remote_code=True, resume_download=True)
@@ -39,7 +43,8 @@ class ChatGLM(BasePredictor):
             ).half().to(self.device)
         model = model.eval()
         self.model = model
-        print(f'Successfully loaded model {model_name}')
+        end = time.perf_counter()
+        print(f'Successfully loaded model {model_name}, time cost: {end - start:.2f}s')
 
     @torch.no_grad()
     def stream_chat_continue(self,
