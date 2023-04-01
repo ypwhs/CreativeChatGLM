@@ -3,9 +3,9 @@ import time
 import torch
 import torch.nn as nn
 
-from gptq import *
-from modelutils import *
-from quant import *
+from gptq.gptq import *
+from gptq.modelutils import *
+from gptq.quant import *
 
 
 def get_llama(model):
