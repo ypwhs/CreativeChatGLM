@@ -14,6 +14,7 @@ model_name_list = [
     'BelleGroup/BELLE-LLAMA-7B-2M',
     'BelleGroup/BELLE-7B-2M',
     'silver/chatglm-6b-slim',
+    'silver/chatglm-6b-int4-slim',
 ]
 
 for model_name in model_name_list:
