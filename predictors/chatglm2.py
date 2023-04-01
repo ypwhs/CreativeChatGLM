@@ -6,6 +6,7 @@ from transformers import AutoModel, AutoTokenizer
 from transformers import LogitsProcessor, LogitsProcessorList
 
 from predictors.base import BasePredictor
+from chatglm.modeling_chatglm import ChatGLMForConditionalGeneration
 
 
 class InvalidScoreLogitsProcessor(LogitsProcessor):
@@ -27,7 +28,7 @@ class ChatGLM(BasePredictor):
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_name, trust_remote_code=True, resume_download=True)
         if 'int4' not in model_name:
-            model = AutoModel.from_pretrained(
+            model = ChatGLMForConditionalGeneration.from_pretrained(
                 model_name,
                 trust_remote_code=True,
                 resume_download=True,
@@ -36,7 +37,7 @@ class ChatGLM(BasePredictor):
                 device_map={'': self.device}
             )
         else:
-            model = AutoModel.from_pretrained(
+            model = ChatGLMForConditionalGeneration.from_pretrained(
                 model_name,
                 trust_remote_code=True,
                 resume_download=True
