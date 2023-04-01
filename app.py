@@ -8,10 +8,10 @@ for name, val in collect_env().items():
 print('Done'.center(64, '-'))
 
 # 加载模型
-# model_name = 'THUDM/chatglm-6b'
-# model_name = 'BelleGroup/BELLE-LLAMA-7B-2M'
+model_name = 'THUDM/chatglm-6b'
 # model_name = 'silver/chatglm-6b-int4-slim'
-model_name = 'BelleGroup/BELLE-LLAMA-7B-2M-gptq'
+# model_name = 'BelleGroup/BELLE-LLAMA-7B-2M'
+# model_name = 'BelleGroup/BELLE-LLAMA-7B-2M-gptq'
 
 if 'chatglm' in model_name.lower():
     from predictors.chatglm import ChatGLM
