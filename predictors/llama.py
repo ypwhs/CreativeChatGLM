@@ -86,3 +86,44 @@ class LLaMa(BasePredictor):
             response = model.process_response(response)
             new_history = history + [(query, response)]
             yield response, new_history
+
+
+def test():
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    model_name = 'BelleGroup/BELLE-LLAMA-7B-2M'
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_name, resume_download=True)
+    model = LlamaForCausalLM.from_pretrained(
+        model_name,
+        low_cpu_mem_usage=True,
+        resume_download=True,
+        torch_dtype=torch.float16 if device == 'cuda' else torch.float32,
+        device_map={'': device})
+    min_length = 10
+    max_length = 2048
+    top_p = 0.95
+    temperature = 0.8
+
+    print("Human:")
+    line = input()
+    while line:
+        inputs = 'Human: ' + line.strip() + '\n\nAssistant:'
+        input_ids = tokenizer.encode(inputs, return_tensors="pt").to(device)
+
+        with torch.no_grad():
+            generated_ids = model.generate(
+                input_ids,
+                do_sample=True,
+                min_length=min_length,
+                max_length=max_length,
+                top_p=top_p,
+                temperature=temperature,
+            )
+        print("Assistant:\n【")
+        print(tokenizer.decode([el.item() for el in generated_ids[0]]))
+        print("】\n-------------------------------\n")
+        line = input()
+
+
+if __name__ == '__main__':
+    test()
