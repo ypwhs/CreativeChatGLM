@@ -22,6 +22,7 @@ class LLaMaGPTQ(LLaMa):
         print(f'Loading model from {checkpoint_path} ...')
         model: LlamaForCausalLM = load_quant(model_name, checkpoint_path, wbits, groupsize)
         model.eval()
+        model.to(self.device)
         self.model = model
         end = time.perf_counter()
         print(f'Successfully loaded model {model_name}, time cost: {end - start:.2f}s')
