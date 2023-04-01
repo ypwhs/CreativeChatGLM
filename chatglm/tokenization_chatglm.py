@@ -172,7 +172,6 @@ class SPTokenizer:
 class ChatGLMTokenizer(PreTrainedTokenizer):
     """
     Construct a ChatGLM tokenizer. Based on byte-level Byte-Pair-Encoding.
-
     Args:
         vocab_file (`str`):
             Path to the vocabulary file.
@@ -287,13 +286,11 @@ class ChatGLMTokenizer(PreTrainedTokenizer):
     def save_vocabulary(self, save_directory, filename_prefix=None):
         """
         Save the vocabulary and special tokens file to a directory.
-
         Args:
             save_directory (`str`):
                 The directory in which to save the vocabulary.
             filename_prefix (`str`, *optional*):
                 An optional prefix to add to the named of the saved files.
-
         Returns:
             `Tuple(str)`: Paths to the files saved.
         """
@@ -318,16 +315,13 @@ class ChatGLMTokenizer(PreTrainedTokenizer):
         """
         Build model inputs from a sequence or a pair of sequence for sequence classification tasks by concatenating and
         adding special tokens. A BERT sequence has the following format:
-
         - single sequence: `[CLS] X [SEP]`
         - pair of sequences: `[CLS] A [SEP] B [SEP]`
-
         Args:
             token_ids_0 (`List[int]`):
                 List of IDs to which the special tokens will be added.
             token_ids_1 (`List[int]`, *optional*):
                 Optional second list of IDs for sequence pairs.
-
         Returns:
             `List[int]`: List of [input IDs](../glossary#input-ids) with the appropriate special tokens.
         """
