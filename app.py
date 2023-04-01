@@ -1,14 +1,16 @@
 import gradio as gr
 from utils_env import collect_env
 
+# 收集环境信息
 print('Collect environment info'.center(64, '-'))
 for name, val in collect_env().items():
     print(f'{name}: {val}')
 print('Done'.center(64, '-'))
 
-
-model_name = 'BelleGroup/BELLE-LLAMA-7B-2M'
-model_name = 'THUDM/chatglm-6b'
+# 加载模型
+# model_name = 'THUDM/chatglm-6b'
+# model_name = 'BelleGroup/BELLE-LLAMA-7B-2M'
+model_name = 'silver/chatglm-6b-int4-slim'
 
 if 'chatglm' in model_name.lower():
     from predictors.chatglm import ChatGLM
@@ -39,6 +41,7 @@ def interrupt(allow_generate):
     allow_generate[0] = False
 
 
+# 搭建 UI 界面
 with gr.Blocks(css=""".message {
     width: inherit !important;
     padding-left: 20px !important;
