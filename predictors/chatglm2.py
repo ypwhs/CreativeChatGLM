@@ -5,7 +5,8 @@ import torch
 from transformers import AutoModel, AutoTokenizer
 from transformers import LogitsProcessor, LogitsProcessorList
 
-from predictors.base import BasePredictor
+from predictors.base import BasePredictor, parse_codeblock
+from chatglm.modeling_chatglm import ChatGLMForConditionalGeneration
 
 
 class InvalidScoreLogitsProcessor(LogitsProcessor):
@@ -27,7 +28,7 @@ class ChatGLM(BasePredictor):
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_name, trust_remote_code=True, resume_download=True)
         if 'int4' not in model_name:
-            model = AutoModel.from_pretrained(
+            model = ChatGLMForConditionalGeneration.from_pretrained(
                 model_name,
                 trust_remote_code=True,
                 resume_download=True,
@@ -36,7 +37,7 @@ class ChatGLM(BasePredictor):
                 device_map={'': self.device}
             )
         else:
-            model = AutoModel.from_pretrained(
+            model = ChatGLMForConditionalGeneration.from_pretrained(
                 model_name,
                 trust_remote_code=True,
                 resume_download=True
@@ -105,4 +106,4 @@ class ChatGLM(BasePredictor):
             outputs = outputs.tolist()[0][input_length:]
             response = tokenizer.decode(outputs)
             response = model.process_response(response)
-            yield response
+            yield parse_codeblock(response)
