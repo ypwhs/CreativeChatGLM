@@ -10,11 +10,15 @@ print('Done'.center(64, '-'))
 # 加载模型
 # model_name = 'THUDM/chatglm-6b'
 # model_name = 'BelleGroup/BELLE-LLAMA-7B-2M'
-model_name = 'silver/chatglm-6b-int4-slim'
+# model_name = 'silver/chatglm-6b-int4-slim'
+model_name = 'BelleGroup/BELLE-LLAMA-7B-2M-gptq'
 
 if 'chatglm' in model_name.lower():
     from predictors.chatglm import ChatGLM
     predictor = ChatGLM(model_name)
+elif 'gptq' in model_name.lower():
+    from predictors.llama_gptq import LLaMaGPTQ
+    predictor = LLaMaGPTQ(model_name)
 elif 'llama' in model_name.lower():
     from predictors.llama import LLaMa
     predictor = LLaMa(model_name)
