@@ -7,15 +7,12 @@ for name, val in collect_env().items():
 print('Done'.center(64, '-'))
 
 
-model_name = 'BelleGroup/BELLE-7B-2M'
+model_name = 'BelleGroup/BELLE-LLAMA-7B-2M'
 model_name = 'THUDM/chatglm-6b'
 
 if 'chatglm' in model_name.lower():
     from predictors.chatglm import ChatGLM
     predictor = ChatGLM(model_name)
-elif 'belle' in model_name.lower():
-    from predictors.belle import BELLE
-    predictor = BELLE(model_name)
 elif 'llama' in model_name.lower():
     from predictors.llama import LLaMa
     predictor = LLaMa(model_name)
