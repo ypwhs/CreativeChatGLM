@@ -8,13 +8,13 @@ for name, val in collect_env().items():
 print('Done'.center(64, '-'))
 
 # 加载模型
-model_name = 'THUDM/chatglm-6b'
-# model_name = 'silver/chatglm-6b-int4-slim'
+# model_name = 'THUDM/chatglm-6b'
+model_name = 'silver/chatglm-6b-int4-slim'
 # model_name = 'BelleGroup/BELLE-LLAMA-7B-2M'
 # model_name = 'BelleGroup/BELLE-LLAMA-7B-2M-gptq'
 
 if 'chatglm' in model_name.lower():
-    from predictors.chatglm2 import ChatGLM
+    from predictors.chatglm_predictor import ChatGLM
     predictor = ChatGLM(model_name)
 elif 'gptq' in model_name.lower():
     from predictors.llama_gptq import LLaMaGPTQ
@@ -26,7 +26,7 @@ elif 'debug' in model_name.lower():
     from predictors.debug import Debug
     predictor = Debug(model_name)
 else:
-    from predictors.chatglm2 import ChatGLM
+    from predictors.chatglm_predictor import ChatGLM
     predictor = ChatGLM(model_name)
 
 
