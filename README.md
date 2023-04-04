@@ -119,6 +119,26 @@
 
 修订的原理是，将用户的输入直接设置为 `history[-1][1]`，模拟模型自己的完整输出，但是不走推理函数。
 
-## 协议
+# 离线包制作方法
+
+## 准备 Python
+
+首先去 Python 官网下载：[https://www.python.org/downloads/](https://www.python.org/downloads/)
+
+注意要下载 `Windows embeddable package (64-bit)` 离线包，我选择的是 [python-3.10.10-embed-amd64.zip](https://www.python.org/ftp/python/3.10.10/python-3.10.10-embed-amd64.zip)。
+
+解压到 `./system/python` 目录下。
+
+## 准备 get-pip.py
+
+去官网下载：[https://bootstrap.pypa.io/get-pip.py](https://bootstrap.pypa.io/get-pip.py)
+
+保存到 `./system/python` 目录下。
+
+## 安装依赖
+
+运行 [setup_offline.bat](setup_offline.bat) 脚本，安装依赖。
+
+# 协议
 
 本仓库的代码依照 [Apache-2.0](LICENSE) 协议开源，ChatGLM-6B 模型的权重的使用则需要遵循 [Model License](MODEL_LICENSE)。
