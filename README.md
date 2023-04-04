@@ -125,9 +125,15 @@
 
 首先去 Python 官网下载：[https://www.python.org/downloads/](https://www.python.org/downloads/)
 
+![image](https://user-images.githubusercontent.com/10473170/229679144-86d96c5c-58e0-4a54-9657-ccfe37943c6e.png)
+
 注意要下载 `Windows embeddable package (64-bit)` 离线包，我选择的是 [python-3.10.10-embed-amd64.zip](https://www.python.org/ftp/python/3.10.10/python-3.10.10-embed-amd64.zip)。
 
+![image](https://user-images.githubusercontent.com/10473170/229679189-1f8b2032-c92c-47ee-ba25-147f4acbf90f.png)
+
 解压到 `./system/python` 目录下。
+
+![image](https://user-images.githubusercontent.com/10473170/229679264-b3633920-757f-4ab8-b9f8-e79a21036146.png)
 
 ## 准备 get-pip.py
 
