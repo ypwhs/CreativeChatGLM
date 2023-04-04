@@ -27,7 +27,19 @@ class ChatGLM(BasePredictor):
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_name, trust_remote_code=True, resume_download=True)
-        if 'int4' not in model_name:
+        if 'slim' in model_name:
+            model = AutoModel.from_pretrained(
+                model_name,
+                trust_remote_code=True,
+                resume_download=True
+            ).half().to(self.device)
+        elif 'int4' in model_name:
+            model = ChatGLMForConditionalGeneration.from_pretrained(
+                model_name,
+                trust_remote_code=True,
+                resume_download=True
+            ).half().to(self.device)
+        else:
             model = ChatGLMForConditionalGeneration.from_pretrained(
                 model_name,
                 trust_remote_code=True,
@@ -36,12 +48,6 @@ class ChatGLM(BasePredictor):
                 torch_dtype=torch.float16 if self.device == 'cuda' else torch.float32,
                 device_map={'': self.device}
             )
-        else:
-            model = ChatGLMForConditionalGeneration.from_pretrained(
-                model_name,
-                trust_remote_code=True,
-                resume_download=True
-            ).half().to(self.device)
         model = model.eval()
         self.model = model
         end = time.perf_counter()
