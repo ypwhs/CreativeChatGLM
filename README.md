@@ -15,15 +15,13 @@
 * 没有Python经验，不会搭建环境
 * 网络环境不好，配置环境、下载模型速度慢
 
-| 名称 | 文件名 | 大小 | 百度网盘 | 备注 |
-| ---- | ---- | ---- | ---- | ---- |
-| **小显存离线包** | CreativeChatGLM_<br/>py310_torch200_<br/>chatglm_6b_int4.zip | 5.55 GB | [点击下载](https://pan.baidu.com/s/1I_KqxWyjO1ksL-wzXZ0JCA?pwd=cglm) | 使用 ChatGLM-6B-int4 权重的离线包，<br/>显存需求 8GB |
-| 大显存离线包 | CreativeChatGLM_<br/>py310_torch200_<br/>chatglm_6b.zip | 14.3 GB | [点击下载](https://pan.baidu.com/s/1wPldt4CY783-JOF80eF7bg?pwd=cglm) | 使用 ChatGLM-6B 权重的离线包，<br/>显存需求 16GB |
-| 环境离线包 | CreativeChatGLM_<br/>py310_torch200_<br/>chatglm_6b.zip | 2.56 GB | [点击下载](https://pan.baidu.com/s/1v3RWNFCIBQGe0yPBfYTjxQ?pwd=cglm) | 不带权重的离线包，启动之后可以<br/>自动下载模型，默认自动下载 <br/>ChatGLM-6B 权重。 |
-| ChatGLM-6B | chatglm-6b.zip | 11.7 GB | [点击下载](https://pan.baidu.com/s/1gqG9a_nnglRouA8yF9KPgA?pwd=cglm) | [THUDM/chatglm-6b](https://huggingface.co/THUDM/chatglm-6b) |
-| ChatGLM-6B-int4 | chatglm-6b-int4.zip | 2.99 GB | [点击下载](https://pan.baidu.com/s/1TXlGUKxKr7EM4oaKWiVSqw?pwd=cglm) | [THUDM/chatglm-6b-int4](https://huggingface.co/THUDM/chatglm-6b-int4) |
+| 名称 | 大小 | 百度网盘 | 备注 |
+| ---- | ---- | ---- | ---- |
+| **小显存离线包** | 5.56 GB | [点击下载](https://pan.baidu.com/s/1UU2KoqABYGOCPjrhq8fLZw?pwd=cglm) | 使用 ChatGLM-6B-int4 权重的离线包，<br/>显存需求 8GB |
+| 大显存离线包 | 14.3 GB | [点击下载](https://pan.baidu.com/s/1w3GVPCO4I5m2rI9GvlEIYQ?pwd=cglm) | 使用 ChatGLM-6B 权重的离线包，<br/>显存需求 16GB |
+| 环境离线包 | 2.56 GB | [点击下载](https://pan.baidu.com/s/1JNhjUJ1B-tuCmsntLgqRYw?pwd=cglm) | 不带权重的离线包，启动之后可以<br/>自动下载模型，默认自动下载 <br/>ChatGLM-6B 权重。 |
 
-如果上面没有你想要的，可以在这里看看：
+除了这些离线一键环境之外，你还可以在下面下载一些模型的权重，包括 `THUDM/chatglm-6b` 系列、`silver/chatglm-6b-slim` 系列、`BelleGroup/BELLE` 系列。
 
 * 百度网盘链接：[https://pan.baidu.com/s/1pnIEj66scZOswHm8oivXmw?pwd=cglm](https://pan.baidu.com/s/1pnIEj66scZOswHm8oivXmw?pwd=cglm)
 
