@@ -139,6 +139,8 @@
 
 保存到 `./system/python` 目录下。
 
+## ⚠️必做
+
 解压之后，记得删除 pth 文件，以解决安装依赖的问题。
 
 比如我删除的文件路径是 `./system/python/python310._pth`
