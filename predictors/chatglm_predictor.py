@@ -6,16 +6,18 @@ from transformers import AutoModel, AutoTokenizer
 from transformers import LogitsProcessor, LogitsProcessorList
 
 from predictors.base import BasePredictor, parse_codeblock
-from chatglm.modeling_chatglm import ChatGLMForConditionalGeneration
 
 
 class InvalidScoreLogitsProcessor(LogitsProcessor):
+
+    def __init__(self, start_pos=20005):
+        self.start_pos = start_pos
 
     def __call__(self, input_ids: torch.LongTensor,
                  scores: torch.FloatTensor) -> torch.FloatTensor:
         if torch.isnan(scores).any() or torch.isinf(scores).any():
             scores.zero_()
-            scores[..., 20005] = 5e4
+            scores[..., self.start_pos] = 5e4
         return scores
 
 
@@ -29,29 +31,28 @@ class ChatGLM(BasePredictor):
             model_name, trust_remote_code=True, resume_download=True)
         if 'slim' in model_name:
             model = AutoModel.from_pretrained(
-                model_name,
-                trust_remote_code=True,
-                resume_download=True
-            ).half().to(self.device)
+                model_name, trust_remote_code=True,
+                resume_download=True).half().to(self.device)
         elif 'int4' in model_name:
-            model = ChatGLMForConditionalGeneration.from_pretrained(
-                model_name,
-                trust_remote_code=True,
-                resume_download=True
-            ).half().to(self.device)
+            model = AutoModel.from_pretrained(
+                model_name, trust_remote_code=True,
+                resume_download=True).half().to(self.device)
         else:
-            model = ChatGLMForConditionalGeneration.from_pretrained(
+            model = AutoModel.from_pretrained(
                 model_name,
                 trust_remote_code=True,
                 resume_download=True,
                 low_cpu_mem_usage=True,
-                torch_dtype=torch.float16 if self.device == 'cuda' else torch.float32,
-                device_map={'': self.device}
-            )
+                torch_dtype=torch.float16
+                if self.device == 'cuda' else torch.float32,
+                device_map={'': self.device})
         model = model.eval()
         self.model = model
+        self.model_name = model_name
         end = time.perf_counter()
-        print(f'Successfully loaded model {model_name}, time cost: {end - start:.2f}s')
+        print(
+            f'Successfully loaded model {model_name}, time cost: {end - start:.2f}s'
+        )
 
     @torch.no_grad()
     def stream_chat_continue(self,
@@ -73,7 +74,9 @@ class ChatGLM(BasePredictor):
             answer = history[-1][1]
         else:
             answer = ''
-        logits_processor.append(InvalidScoreLogitsProcessor())
+        logits_processor.append(
+            InvalidScoreLogitsProcessor(
+                start_pos=20005 if 'slim' not in self.model_name else 5))
         gen_kwargs = {
             "max_length": max_length,
             "do_sample": do_sample,
@@ -102,14 +105,42 @@ class ChatGLM(BasePredictor):
         final_input_ids = torch.cat(
             [batch_input['input_ids'], batch_answer['input_ids'][:, :-2]],
             dim=-1).cuda()
-        attention_mask = torch.ones_like(final_input_ids).bool().to(model.device)
-        attention_mask[:, input_length:] = False
+
+        attention_mask = model.get_masks(
+            final_input_ids, device=final_input_ids.device)
 
         batch_input['input_ids'] = final_input_ids
         batch_input['attention_mask'] = attention_mask
+
+        input_ids = final_input_ids
+        MASK, gMASK = self.model.config.bos_token_id - 4, self.model.config.bos_token_id - 3
+        mask_token = MASK if MASK in input_ids else gMASK
+        mask_positions = [seq.tolist().index(mask_token) for seq in input_ids]
+        batch_input['position_ids'] = self.model.get_position_ids(
+            input_ids, mask_positions, device=input_ids.device)
 
         for outputs in model.stream_generate(**batch_input, **gen_kwargs):
             outputs = outputs.tolist()[0][input_length:]
             response = tokenizer.decode(outputs)
             response = model.process_response(response)
             yield parse_codeblock(response)
+
+
+def test():
+    # model_name = 'THUDM/chatglm-6b'
+    model_name = 'silver/chatglm-6b-int4-slim'
+
+    predictor = ChatGLM(model_name)
+    top_p = 0.95
+    max_length = 128
+    temperature = 0.8
+
+    line = '你是谁？'
+    print(line)
+    for x in predictor.predict_continue(line, '我是张三丰，', max_length, top_p,
+                                        temperature, [True], None):
+        print(x[0][-1][1])
+
+
+if __name__ == '__main__':
+    test()
