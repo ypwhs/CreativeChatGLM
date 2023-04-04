@@ -17,9 +17,9 @@
 
 | 名称 | 大小 | 百度网盘 | 备注 |
 | ---- | ---- | ---- | ---- |
-| **小显存离线包** | 5.56 GB | [点击下载](https://pan.baidu.com/s/1UU2KoqABYGOCPjrhq8fLZw?pwd=cglm) | 使用 ChatGLM-6B-int4 权重的离线包，<br/>显存需求 8GB |
-| 大显存离线包 | 14.3 GB | [点击下载](https://pan.baidu.com/s/1w3GVPCO4I5m2rI9GvlEIYQ?pwd=cglm) | 使用 ChatGLM-6B 权重的离线包，<br/>显存需求 16GB |
-| 环境离线包 | 2.56 GB | [点击下载](https://pan.baidu.com/s/1JNhjUJ1B-tuCmsntLgqRYw?pwd=cglm) | 不带权重的离线包，启动之后可以<br/>自动下载模型，默认自动下载 <br/>ChatGLM-6B 权重。 |
+| **小显存离线包** | 5.56 GB | [点击下载](https://pan.baidu.com/s/1UU2KoqABYGOCPjrhq8fLZw?pwd=cglm) | 使用 ChatGLM-6B-int4 权重的离线包，显存需求 8GB |
+| 大显存离线包 | 14.3 GB | [点击下载](https://pan.baidu.com/s/1w3GVPCO4I5m2rI9GvlEIYQ?pwd=cglm) | 使用 ChatGLM-6B 权重的离线包，显存需求 16GB |
+| 环境离线包 | 2.56 GB | [点击下载](https://pan.baidu.com/s/1JNhjUJ1B-tuCmsntLgqRYw?pwd=cglm) | 不带权重的离线包，启动之后可以自动下载模型，默认自动下载 ChatGLM-6B 权重。 |
 
 除了这些离线一键环境之外，你还可以在下面下载一些模型的权重，包括 `THUDM/chatglm-6b` 系列、`silver/chatglm-6b-slim` 系列、`BelleGroup/BELLE` 系列。
 
