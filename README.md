@@ -25,13 +25,9 @@
 
 * 百度网盘链接：[https://pan.baidu.com/s/1pnIEj66scZOswHm8oivXmw?pwd=cglm](https://pan.baidu.com/s/1pnIEj66scZOswHm8oivXmw?pwd=cglm)
 
-<details><summary>点击查看详细步骤</summary>
-
 下载好环境包之后，解压，然后运行 `start_offline.bat` 脚本，即可启动服务：
 
-![image](https://user-images.githubusercontent.com/10473170/227984407-cdf8ba61-e4e0-4838-a34f-07de18cb37fc.png)
-
-</details>
+![image](https://user-images.githubusercontent.com/10473170/229680125-6af06b25-3d26-49cc-969b-4f6154c522de.png)
 
 ## 虚拟环境
 
@@ -119,6 +115,10 @@
 
 # 离线包制作方法
 
+关于本项目中的离线包制作方法，可以查看下面的详细步骤。
+
+<details><summary>点击查看详细步骤</summary>
+
 ## 准备 Python
 
 首先去 Python 官网下载：[https://www.python.org/downloads/](https://www.python.org/downloads/)
@@ -172,6 +172,8 @@
 ![image](https://user-images.githubusercontent.com/10473170/229680404-0b28dfd4-382e-4cfc-9392-997f134c0242.png)
 
 可以看到，服务正常启动。
+
+</details>
 
 # 协议
 
