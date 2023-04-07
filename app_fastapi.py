@@ -31,21 +31,6 @@ else:
     predictor = ChatGLM(model_name)
 
 
-def revise(history, latest_message):
-    history[-1] = (history[-1][0], latest_message)
-    return history, ''
-
-
-def revoke(history):
-    if len(history) >= 1:
-        history.pop()
-    return history
-
-
-def interrupt(allow_generate):
-    allow_generate[0] = False
-
-
 # 接入log
 def getLogger(name, file_name, use_formatter=True):
     logger = logging.getLogger(name)
