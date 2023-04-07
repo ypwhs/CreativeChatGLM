@@ -1,6 +1,7 @@
 from utils_env import collect_env
 from fastapi import FastAPI
 from sse_starlette.sse import ServerSentEvent, EventSourceResponse
+# from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import argparse
@@ -8,12 +9,6 @@ import logging
 import os
 import json
 import sys
-
-# 收集环境信息
-print('Collect environment info'.center(64, '-'))
-for name, val in collect_env().items():
-    print(f'{name}: {val}')
-print('Done'.center(64, '-'))
 
 # 加载模型
 # model_name = 'THUDM/chatglm-6b'
@@ -64,7 +59,8 @@ def getLogger(name, file_name, use_formatter=True):
         handler = logging.FileHandler(file_name, encoding='utf8')
         handler.setLevel(logging.INFO)
         if use_formatter:
-            formatter = logging.Formatter('%(asctime)s - %(name)s - %(message)s')
+            formatter = logging.Formatter(
+                '%(asctime)s - %(name)s - %(message)s')
             handler.setFormatter(formatter)
         logger.addHandler(handler)
     return logger
@@ -75,6 +71,7 @@ logger = getLogger('ChatGLM', 'chatlog.log')
 # 超参数 用于控制模型回复时 上文的长度
 MAX_HISTORY = 5
 
+
 # 接入FastAPI
 def start_server(quantize_level, http_address: str, port: int, gpu_id: str):
     os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
@@ -83,54 +80,29 @@ def start_server(quantize_level, http_address: str, port: int, gpu_id: str):
     bot = predictor
 
     app = FastAPI()
-    app.add_middleware(CORSMiddleware,
-                       allow_origins=["*"],
-                       allow_credentials=True,
-                       allow_methods=["*"],
-                       allow_headers=["*"]
-                       )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"])
 
     @app.get("/")
     def index():
         return {'message': 'started', 'success': True}
 
     @app.post("/stream")
-    def answer_question_stream(arg_dict: dict):
-        def decorate(generator):
-            for item in generator:
-                yield ServerSentEvent(json.dumps(item, ensure_ascii=False), event='delta')
-
-        # inputs = [query, blank_input, max_length, top_p, temperature, allow_generate, history]
-        try:
-            query = arg_dict["query"]
-            blank_input = arg_dict.get("preinput", "")
-            max_length = arg_dict.get("max_length", 256)
-            top_p = arg_dict.get("top_p", 0.7)
-            temperature = arg_dict.get("temperature", 1.0)
-            allow_generate = arg_dict.get("allow_generate", [True])
-            history = arg_dict.get("history", [])
-            logger.info("Query - {}".format(query))
-            if len(history) > 0:
-                logger.info("History - {}".format(history))
-            history = history[-MAX_HISTORY:]
-            history = [tuple(h) for h in history]
-            inputs = [query, blank_input, max_length, top_p, temperature, allow_generate, history]
-            return EventSourceResponse(decorate(bot.predict_continue(*inputs)))
-            # return EventSourceResponse(bot.predict_continue(*inputs))
-        except Exception as e:
-            logger.error(f"error: {e}")
-            return EventSourceResponse(decorate(bot.predict_continue(None, None)))
-
-    @app.post("/continue")
     def continue_question_stream(arg_dict: dict):
+
         def decorate(generator):
             for item in generator:
-                yield ServerSentEvent(json.dumps(item, ensure_ascii=False), event='delta')
+                yield ServerSentEvent(
+                    json.dumps(item, ensure_ascii=False), event='delta')
 
-        # inputs = [query, preinput, max_length, top_p, temperature, allow_generate, history]
+        # inputs = [query, creative_factor, max_length, top_p, temperature, allow_generate, history]
         try:
             query = arg_dict["query"]
-            preinput = arg_dict.get("preinput", "")
+            creative_factor = arg_dict.get("creative_factor", "")
             max_length = arg_dict.get("max_length", 256)
             top_p = arg_dict.get("top_p", 0.7)
             temperature = arg_dict.get("temperature", 1.0)
@@ -141,12 +113,16 @@ def start_server(quantize_level, http_address: str, port: int, gpu_id: str):
                 logger.info("History - {}".format(history))
             history = history[-MAX_HISTORY:]
             history = [tuple(h) for h in history]
-            inputs = [query, preinput, max_length, top_p, temperature, allow_generate, history]
+            inputs = [
+                query, creative_factor, max_length, top_p, temperature,
+                allow_generate, history
+            ]
             return EventSourceResponse(decorate(bot.predict_continue(*inputs)))
             # return EventSourceResponse(bot.predict_continue(*inputs))
         except Exception as e:
             logger.error(f"error: {e}")
-            return EventSourceResponse(decorate(bot.predict_continue(None, None)))
+            return EventSourceResponse(
+                decorate(bot.predict_continue(None, None)))
 
     logger.info("starting server...")
     # uvicorn.run(app=app, host=http_address, port=port, debug=False)
@@ -154,15 +130,22 @@ def start_server(quantize_level, http_address: str, port: int, gpu_id: str):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Stream API Service for ChatGLM-6B')
-    parser.add_argument('--device', '-d', help='device，-1 means cpu, other means gpu ids', default='0')
-    parser.add_argument('--quantize', '-q', help='level of quantize, option：16, 8 or 4', default=16)
-    parser.add_argument('--host', '-H', help='host to listen', default='0.0.0.0')
-    parser.add_argument('--port', '-P', help='port of this service', default=8000)
+    parser = argparse.ArgumentParser(
+        description='Stream API Service for ChatGLM-6B')
+    parser.add_argument(
+        '--device',
+        '-d',
+        help='device，-1 means cpu, other means gpu ids',
+        default='0')
+    parser.add_argument(
+        '--quantize',
+        '-q',
+        help='level of quantize, option：16, 8 or 4',
+        default=16)
+    parser.add_argument(
+        '--host', '-H', help='host to listen', default='0.0.0.0')
+    parser.add_argument(
+        '--port', '-P', help='port of this service', default=8000)
     args = parser.parse_args()
     start_server(args.quantize, args.host, int(args.port), args.device)
     # print(f"Server started at {args.host}:{args.port}")
-
-
-
-
