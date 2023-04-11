@@ -5,3 +5,5 @@ cpm_kernels~=1.0.11
 torch>=1.10
 gradio~=3.25.0
 accelerate~=0.17.0
+mdtex2html~=1.2.0
+sentencepiece~=0.1.97
