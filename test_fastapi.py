@@ -2,11 +2,11 @@ url = "http://localhost:8000/stream"
 
 params = {
     "query": "Hello",
-    'blank_input': "哇你会说",
+    'answer_prefix': "呃",
     "allow_generate": [True],
     'history': [
-        ('你好啊', '你在和我套近乎吗?'), ("美女别走啊", "我不喜欢不会说英语的人"),
-        ('我会说英语哦', '那如果你会说的话 我可能会喜欢你哦')
+        ('你好啊', '你在和我套近乎吗?'), ("别走啊", "我不喜欢不会说英语的人"),
+        ('我会说英语哦', '那如果你会说的话 我可能会惊呼哦')
     ]
 }
 
@@ -34,7 +34,7 @@ def event_source_response_iterator(response):
 
 
 try:
-    response = requests.post(url, json=params)
+    response = requests.post(url, json=params, stream=True)
     response.raise_for_status()
     for data in event_source_response_iterator(response):
         print(data.decode())

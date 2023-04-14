@@ -1,7 +1,6 @@
 from utils_env import collect_env
 from fastapi import FastAPI
-from sse_starlette.sse import ServerSentEvent, EventSourceResponse
-# from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import argparse
@@ -53,8 +52,7 @@ def getLogger(name, file_name, use_formatter=True):
 
 logger = getLogger('ChatGLM', 'chatlog.log')
 
-# 超参数 用于控制模型回复时 上文的长度
-MAX_HISTORY = 5
+
 
 
 # 接入FastAPI
@@ -72,6 +70,8 @@ def start_server(quantize_level, http_address: str, port: int, gpu_id: str):
         allow_methods=["*"],
         allow_headers=["*"])
 
+    allow_generate = [True]
+
     @app.get("/")
     def index():
         return {'message': 'started', 'success': True}
@@ -81,40 +81,50 @@ def start_server(quantize_level, http_address: str, port: int, gpu_id: str):
 
         def decorate(generator):
             for item in generator:
-                yield ServerSentEvent(
-                    json.dumps(item, ensure_ascii=False), event='delta')
+                yield f"data: {json.dumps(item, ensure_ascii=False)}\n\n"
 
-        # inputs = [query, creative_factor, max_length, top_p, temperature, allow_generate, history]
+        # inputs = [query, answer_prefix, max_length, top_p, temperature, allow_generate, history]
         try:
             query = arg_dict["query"]
-            creative_factor = arg_dict.get("creative_factor", "")
+            answer_prefix = arg_dict.get("answer_prefix", "")
             max_length = arg_dict.get("max_length", 256)
             top_p = arg_dict.get("top_p", 0.7)
             temperature = arg_dict.get("temperature", 1.0)
             allow_generate = arg_dict.get("allow_generate", [True])
             history = arg_dict.get("history", [])
             logger.info("Query - {}".format(query))
+            if answer_prefix:
+                logger.info(f"answer_prefix - {answer_prefix}")
+            history = history[-MAX_HISTORY:]
             if len(history) > 0:
                 logger.info("History - {}".format(history))
-            history = history[-MAX_HISTORY:]
+            
             history = [tuple(h) for h in history]
             inputs = [
-                query, creative_factor, max_length, top_p, temperature,
+                query, answer_prefix, max_length, top_p, temperature,
                 allow_generate, history
             ]
-            return EventSourceResponse(decorate(bot.predict_continue(*inputs)))
+            return StreamingResponse(decorate(bot.predict_continue(*inputs)))
             # return EventSourceResponse(bot.predict_continue(*inputs))
         except Exception as e:
             logger.error(f"error: {e}")
-            return EventSourceResponse(
+            return StreamingResponse(
                 decorate(bot.predict_continue(None, None)))
 
+    @app.post("/interrupt")
+    def interrupt():
+        allow_generate[0] = False
+        logger.error("Interrupted.")
+        return {"message": "OK"}
+
     logger.info("starting server...")
-    # uvicorn.run(app=app, host=http_address, port=port, debug=False)
     uvicorn.run(app=app, host=http_address, port=port)
 
 
 if __name__ == '__main__':
+    # 超参数 用于控制模型回复时 上文的长度
+    MAX_HISTORY = 5
+
     parser = argparse.ArgumentParser(
         description='Stream API Service for ChatGLM-6B')
     parser.add_argument(
@@ -133,4 +143,3 @@ if __name__ == '__main__':
         '--port', '-P', help='port of this service', default=8000)
     args = parser.parse_args()
     start_server(args.quantize, args.host, int(args.port), args.device)
-    # print(f"Server started at {args.host}:{args.port}")
