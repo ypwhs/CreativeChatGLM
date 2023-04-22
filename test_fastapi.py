@@ -2,7 +2,7 @@ url = "http://localhost:8000/stream"
 
 params = {
     "query": "Hello",
-    'answer_prefix': "呃",
+    'answer_prefix': "Nice",
     "allow_generate": [True],
     'history': [
         ('你好啊', '你在和我套近乎吗?'), ("别走啊", "我不喜欢不会说英语的人"),
