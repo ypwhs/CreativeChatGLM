@@ -127,8 +127,8 @@ class ChatGLM(BasePredictor):
 
 
 def test():
-    # model_name = 'THUDM/chatglm-6b'
-    model_name = 'silver/chatglm-6b-int4-slim'
+    model_name = 'THUDM/chatglm-6b-int4'
+    # model_name = 'silver/chatglm-6b-int4-slim'
 
     predictor = ChatGLM(model_name)
     top_p = 0.95
