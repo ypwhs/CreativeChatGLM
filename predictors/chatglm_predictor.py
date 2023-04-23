@@ -29,22 +29,14 @@ class ChatGLM(BasePredictor):
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_name, trust_remote_code=True, resume_download=True)
-        if self.device == 'cpu':
-            from chatglm.modeling_chatglm import ChatGLMForConditionalGeneration
-            model = ChatGLMForConditionalGeneration.from_pretrained(
-                model_name,
-                trust_remote_code=True,
-                resume_download=True,
-                torch_dtype=torch.float32,
-                device_map={'': self.device})
-        elif 'slim' in model_name:
+        if 'slim' in model_name:
             model = AutoModel.from_pretrained(
                 model_name, trust_remote_code=True,
                 resume_download=True)
             if self.device == 'cuda':
                 model = model.half().to(self.device)
             else:
-                model = model.to(self.device)
+                model = model.float()
         elif 'int4' in model_name:
             model = AutoModel.from_pretrained(
                 model_name, trust_remote_code=True,
@@ -52,7 +44,7 @@ class ChatGLM(BasePredictor):
             if self.device == 'cuda':
                 model = model.half().to(self.device)
             else:
-                model = model.to(self.device)
+                model = model.float()
         else:
             model = AutoModel.from_pretrained(
                 model_name,
@@ -62,6 +54,8 @@ class ChatGLM(BasePredictor):
                 torch_dtype=torch.float16
                 if self.device == 'cuda' else torch.float32,
                 device_map={'': self.device})
+            if self.device == 'cpu':
+                model = model.float()
         model = model.eval()
         self.model = model
         self.model_name = model_name
