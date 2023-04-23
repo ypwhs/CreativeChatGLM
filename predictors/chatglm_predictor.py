@@ -104,7 +104,8 @@ class ChatGLM(BasePredictor):
         input_length = len(batch_input['input_ids'][0])
         final_input_ids = torch.cat(
             [batch_input['input_ids'], batch_answer['input_ids'][:, :-2]],
-            dim=-1).cuda()
+            dim=-1)
+        final_input_ids = final_input_ids.to(model.device)
 
         attention_mask = model.get_masks(
             final_input_ids, device=final_input_ids.device)
