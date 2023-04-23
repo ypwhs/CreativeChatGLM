@@ -146,7 +146,8 @@ class RotaryEmbedding(torch.nn.Module):
     def __init__(self, dim, base=10000, precision=torch.half, learnable=False):
         super().__init__()
         inv_freq = 1. / (base ** (torch.arange(0, dim, 2).float() / dim))
-        inv_freq = inv_freq.half()
+        if precision == torch.half:
+            inv_freq = inv_freq.half()
         self.learnable = learnable
         if learnable:
             self.inv_freq = torch.nn.Parameter(inv_freq)
