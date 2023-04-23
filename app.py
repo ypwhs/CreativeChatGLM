@@ -95,3 +95,4 @@ with gr.Blocks(css=""".message {
         outputs=[chatbot, query, continue_message])
     interrupt_btn.click(interrupt, inputs=[allow_generate])
 demo.queue(concurrency_count=4).launch(server_name='0.0.0.0', server_port=7860, share=False, inbrowser=False)
+demo.close()
