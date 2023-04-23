@@ -28,19 +28,29 @@ else:
     predictor = ChatGLM(model_name)
 
 
-def revise(history, latest_message):
+def revise(history, latest_message, last_state):
     history[-1] = (history[-1][0], latest_message)
+    last_state[0] = history
+    last_state[2] = latest_message
     return history, ''
 
 
 def revoke(history):
     if len(history) >= 1:
         history.pop()
+    last_state[0] = history
     return history
 
 
 def interrupt(allow_generate):
     allow_generate[0] = False
+
+
+def regenerate(last_state, max_length, top_p, temperature, allow_generate):
+    history, query, continue_message = last_state
+    for x in predictor.predict_continue(query, continue_message, max_length, top_p,
+                                        temperature, allow_generate, history, last_state):
+        yield x
 
 
 # 搭建 UI 界面
@@ -79,20 +89,24 @@ with gr.Blocks(css=""".message {
                 revise_btn = gr.Button("修订")
                 revoke_btn = gr.Button("撤回")
                 interrupt_btn = gr.Button("终止生成")
+                regenerate_btn = gr.Button("重新生成")
 
     history = gr.State([])
     allow_generate = gr.State([True])
     blank_input = gr.State("")
+    last_state = gr.State([[], '', ''])  # history, query, continue_message
     generate_button.click(
         predictor.predict_continue,
-        inputs=[query, blank_input, max_length, top_p, temperature, allow_generate, history],
+        inputs=[query, blank_input, max_length, top_p, temperature, allow_generate, history, last_state],
         outputs=[chatbot, query])
-    revise_btn.click(revise, inputs=[history, revise_message], outputs=[chatbot, revise_message])
-    revoke_btn.click(revoke, inputs=[history], outputs=[chatbot])
+    revise_btn.click(revise, inputs=[history, revise_message, last_state], outputs=[chatbot, revise_message])
+    revoke_btn.click(revoke, inputs=[history, last_state], outputs=[chatbot])
     continue_btn.click(
         predictor.predict_continue,
-        inputs=[query, continue_message, max_length, top_p, temperature, allow_generate, history],
+        inputs=[query, continue_message, max_length, top_p, temperature, allow_generate, history, last_state],
         outputs=[chatbot, query, continue_message])
     interrupt_btn.click(interrupt, inputs=[allow_generate])
+    regenerate_btn.click(regenerate, inputs=[last_state, max_length, top_p, temperature, allow_generate],
+                         outputs=[chatbot, query, continue_message])
 demo.queue(concurrency_count=4).launch(server_name='0.0.0.0', server_port=7860, share=False, inbrowser=False)
 demo.close()
