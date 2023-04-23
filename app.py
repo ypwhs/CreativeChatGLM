@@ -50,6 +50,7 @@ def regenerate(last_state, max_length, top_p, temperature, allow_generate):
     history, query, continue_message = last_state
     if len(query) == 0:
         print("Please input a query first.")
+        return
     for x in predictor.predict_continue(query, continue_message, max_length, top_p,
                                         temperature, allow_generate, history, last_state):
         yield x
@@ -90,8 +91,8 @@ with gr.Blocks(css=""".message {
                     show_label=False, placeholder="Revise message", lines=2).style(container=False)
                 revise_btn = gr.Button("修订")
                 revoke_btn = gr.Button("撤回")
-                interrupt_btn = gr.Button("终止生成")
                 regenerate_btn = gr.Button("重新生成")
+                interrupt_btn = gr.Button("终止生成")
 
     history = gr.State([])
     allow_generate = gr.State([True])
@@ -101,7 +102,7 @@ with gr.Blocks(css=""".message {
         predictor.predict_continue,
         inputs=[query, blank_input, max_length, top_p, temperature, allow_generate, history, last_state],
         outputs=[chatbot, query])
-    revise_btn.click(revise, inputs=[history, revise_message, last_state], outputs=[chatbot, revise_message])
+    revise_btn.click(revise, inputs=[history, revise_message], outputs=[chatbot, revise_message])
     revoke_btn.click(revoke, inputs=[history, last_state], outputs=[chatbot])
     continue_btn.click(
         predictor.predict_continue,
