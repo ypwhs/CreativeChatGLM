@@ -32,11 +32,19 @@ class ChatGLM(BasePredictor):
         if 'slim' in model_name:
             model = AutoModel.from_pretrained(
                 model_name, trust_remote_code=True,
-                resume_download=True).half().to(self.device)
+                resume_download=True)
+            if self.device == 'cuda':
+                model = model.half().to(self.device)
+            else:
+                model = model.to(self.device)
         elif 'int4' in model_name:
             model = AutoModel.from_pretrained(
                 model_name, trust_remote_code=True,
-                resume_download=True).half().to(self.device)
+                resume_download=True)
+            if self.device == 'cuda':
+                model = model.half().to(self.device)
+            else:
+                model = model.to(self.device)
         else:
             model = AutoModel.from_pretrained(
                 model_name,
