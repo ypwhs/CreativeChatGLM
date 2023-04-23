@@ -74,7 +74,7 @@ with gr.Blocks(css=""".message {
 """)
     with gr.Row():
         with gr.Column(scale=4):
-            chatbot = gr.Chatbot(elem_id="chat-box", show_label=False).style(height=900)
+            chatbot = gr.Chatbot(elem_id="chat-box", show_label=False).style(height=850)
         with gr.Column(scale=1):
             with gr.Row():
                 max_length = gr.Slider(32, 4096, value=2048, step=1.0, label="Maximum length", interactive=True)
