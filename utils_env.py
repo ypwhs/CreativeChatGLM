@@ -23,6 +23,8 @@ def collect_env():
             devices[torch.cuda.get_device_name(k)].append(str(k))
         for name, device_ids in devices.items():
             env_info['GPU ' + ','.join(device_ids)] = name
+    else:
+        env_info['CUDA available'] = False
 
     return env_info
 
