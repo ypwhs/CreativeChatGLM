@@ -35,7 +35,7 @@ def revise(history, latest_message, last_state):
     return history, ''
 
 
-def revoke(history):
+def revoke(history, last_state):
     if len(history) >= 1:
         history.pop()
     last_state[0] = history
