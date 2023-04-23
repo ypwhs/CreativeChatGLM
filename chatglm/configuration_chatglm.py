@@ -12,9 +12,12 @@ class ChatGLMConfig(PretrainedConfig):
     It is used to instantiate an ChatGLM model according to the specified arguments, defining the model
     architecture. Instantiating a configuration with the defaults will yield a similar configuration to that of
     the ChatGLM-6B [THUDM/ChatGLM-6B](https://huggingface.co/THUDM/chatglm-6b) architecture.
+
     Configuration objects inherit from  [`PretrainedConfig`] and can be used
     to control the model outputs. Read the documentation from  [`PretrainedConfig`]
     for more information.
+
+
     Args:
         vocab_size (`int`, *optional*, defaults to 150528):
             Vocabulary size of the ChatGLM-6B model. Defines the number of different tokens that can be represented by the
@@ -36,13 +39,17 @@ class ChatGLMConfig(PretrainedConfig):
         use_cache (`bool`, *optional*, defaults to `True`):
             Whether the model should return the last key/values attentions (not used by all models).
         Example:
+
     ```python
-    >>> from chatglm.configuration_chatglm import ChatGLMConfig
-    >>> from chatglm.modeling_chatglm import ChatGLMModel
+    >>> from configuration_chatglm import ChatGLMConfig
+    >>> from modeling_chatglm import ChatGLMModel
+
     >>> # Initializing a ChatGLM-6B THUDM/ChatGLM-6B style configuration
     >>> configuration = ChatGLMConfig()
+
     >>> # Initializing a model from the THUDM/ChatGLM-6B style configuration
     >>> model = ChatGLMModel(configuration)
+
     >>> # Accessing the model configuration
     >>> configuration = model.config
     ```
@@ -59,12 +66,15 @@ class ChatGLMConfig(PretrainedConfig):
             use_cache=False,
             bos_token_id=150004,
             eos_token_id=150005,
+            mask_token_id=150000,
+            gmask_token_id=150001,
             pad_token_id=0,
             max_sequence_length=2048,
             inner_hidden_size=16384,
             position_encoding_2d=True,
             quantization_bit=0,
-            quantization_embeddings=False,
+            pre_seq_len=None,
+            prefix_projection=False,
             **kwargs
     ):
         self.num_layers = num_layers
@@ -78,9 +88,13 @@ class ChatGLMConfig(PretrainedConfig):
         self.bos_token_id = bos_token_id
         self.eos_token_id = eos_token_id
         self.pad_token_id = pad_token_id
+        self.mask_token_id = mask_token_id
+        self.gmask_token_id = gmask_token_id
         self.position_encoding_2d = position_encoding_2d
-        self.quantization_bit=quantization_bit
-        self.quantization_embeddings=quantization_embeddings
+        self.quantization_bit = quantization_bit
+        self.pre_seq_len = pre_seq_len
+        self.prefix_projection = prefix_projection
+
         super().__init__(
             pad_token_id=pad_token_id,
             bos_token_id=bos_token_id,
