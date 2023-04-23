@@ -31,7 +31,8 @@ else:
 def revise(history, latest_message, last_state):
     history[-1] = (history[-1][0], latest_message)
     last_state[0] = history
-    last_state[2] = latest_message
+    last_state[1] = ''
+    last_state[2] = ''
     return history, ''
 
 
@@ -39,6 +40,8 @@ def revoke(history, last_state):
     if len(history) >= 1:
         history.pop()
     last_state[0] = history
+    last_state[1] = ''
+    last_state[2] = ''
     return history
 
 
