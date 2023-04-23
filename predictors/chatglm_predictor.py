@@ -10,7 +10,7 @@ from predictors.base import BasePredictor, parse_codeblock
 
 class InvalidScoreLogitsProcessor(LogitsProcessor):
 
-    def __init__(self, start_pos=20005):
+    def __init__(self, start_pos=5):
         self.start_pos = start_pos
 
     def __call__(self, input_ids: torch.LongTensor,
@@ -29,7 +29,15 @@ class ChatGLM(BasePredictor):
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_name, trust_remote_code=True, resume_download=True)
-        if 'slim' in model_name:
+        if self.device == 'cpu':
+            from chatglm.modeling_chatglm import ChatGLMForConditionalGeneration
+            model = ChatGLMForConditionalGeneration.from_pretrained(
+                model_name,
+                trust_remote_code=True,
+                resume_download=True,
+                torch_dtype=torch.float32,
+                device_map={'': self.device})
+        elif 'slim' in model_name:
             model = AutoModel.from_pretrained(
                 model_name, trust_remote_code=True,
                 resume_download=True)
@@ -83,8 +91,7 @@ class ChatGLM(BasePredictor):
         else:
             answer = ''
         logits_processor.append(
-            InvalidScoreLogitsProcessor(
-                start_pos=20005 if 'slim' not in self.model_name else 5))
+            InvalidScoreLogitsProcessor(5))
         gen_kwargs = {
             "max_length": max_length,
             "do_sample": do_sample,
