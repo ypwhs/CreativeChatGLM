@@ -1,3 +1,4 @@
+import copy
 from abc import ABC, abstractmethod
 
 
@@ -27,8 +28,11 @@ class BasePredictor(ABC):
         raise NotImplementedError
 
     def predict_continue(self, query, latest_message, max_length, top_p,
-                         temperature, allow_generate, history, *args,
+                         temperature, allow_generate, history, last_state, *args,
                          **kwargs):
+        last_state[0] = copy.deepcopy(history)
+        last_state[1] = query
+        last_state[2] = latest_message
         if history is None:
             history = []
         allow_generate[0] = True
