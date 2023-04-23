@@ -28,11 +28,8 @@ else:
     predictor = ChatGLM(model_name)
 
 
-def revise(history, latest_message, last_state):
+def revise(history, latest_message):
     history[-1] = (history[-1][0], latest_message)
-    last_state[0] = history
-    last_state[1] = ''
-    last_state[2] = ''
     return history, ''
 
 
