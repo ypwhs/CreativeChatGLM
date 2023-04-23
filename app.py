@@ -71,7 +71,7 @@ with gr.Blocks(css=""".message {
 """)
     with gr.Row():
         with gr.Column(scale=4):
-            chatbot = gr.Chatbot(elem_id="chat-box", show_label=False).style(height=800)
+            chatbot = gr.Chatbot(elem_id="chat-box", show_label=False).style(height=900)
         with gr.Column(scale=1):
             with gr.Row():
                 max_length = gr.Slider(32, 4096, value=2048, step=1.0, label="Maximum length", interactive=True)
@@ -105,8 +105,9 @@ with gr.Blocks(css=""".message {
         predictor.predict_continue,
         inputs=[query, continue_message, max_length, top_p, temperature, allow_generate, history, last_state],
         outputs=[chatbot, query, continue_message])
-    interrupt_btn.click(interrupt, inputs=[allow_generate])
     regenerate_btn.click(regenerate, inputs=[last_state, max_length, top_p, temperature, allow_generate],
                          outputs=[chatbot, query, continue_message])
+    interrupt_btn.click(interrupt, inputs=[allow_generate])
+
 demo.queue(concurrency_count=4).launch(server_name='0.0.0.0', server_port=7860, share=False, inbrowser=False)
 demo.close()
