@@ -47,7 +47,7 @@ class BasePredictor(ABC):
                 temperature=temperature):
             history[-1] = (history[-1][0], response)
             history_colorful = copy.deepcopy(history)
-            colorful_response = f'<span style="color:blue;">{latest_message}</span>{response[len(latest_message):]}'
+            colorful_response = f'<span style="color:red">{latest_message}</span>{response[len(latest_message):]}'
             history_colorful[-1] = (history_colorful[-1][0], colorful_response)
             yield history_colorful, '', ''
             if not allow_generate[0]:
