@@ -48,6 +48,8 @@ def interrupt(allow_generate):
 
 def regenerate(last_state, max_length, top_p, temperature, allow_generate):
     history, query, continue_message = last_state
+    if len(query) == 0:
+        raise gr.Error("Please input a query first.")
     for x in predictor.predict_continue(query, continue_message, max_length, top_p,
                                         temperature, allow_generate, history, last_state):
         yield x
