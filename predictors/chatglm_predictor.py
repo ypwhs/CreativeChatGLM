@@ -10,7 +10,7 @@ from predictors.base import BasePredictor, parse_codeblock
 
 class InvalidScoreLogitsProcessor(LogitsProcessor):
 
-    def __init__(self, start_pos=20005):
+    def __init__(self, start_pos=5):
         self.start_pos = start_pos
 
     def __call__(self, input_ids: torch.LongTensor,
@@ -32,11 +32,19 @@ class ChatGLM(BasePredictor):
         if 'slim' in model_name:
             model = AutoModel.from_pretrained(
                 model_name, trust_remote_code=True,
-                resume_download=True).half().to(self.device)
+                resume_download=True)
+            if self.device == 'cuda':
+                model = model.half().to(self.device)
+            else:
+                model = model.float()
         elif 'int4' in model_name:
             model = AutoModel.from_pretrained(
                 model_name, trust_remote_code=True,
-                resume_download=True).half().to(self.device)
+                resume_download=True)
+            if self.device == 'cuda':
+                model = model.half().to(self.device)
+            else:
+                model = model.float()
         else:
             model = AutoModel.from_pretrained(
                 model_name,
@@ -46,6 +54,8 @@ class ChatGLM(BasePredictor):
                 torch_dtype=torch.float16
                 if self.device == 'cuda' else torch.float32,
                 device_map={'': self.device})
+            if self.device == 'cpu':
+                model = model.float()
         model = model.eval()
         self.model = model
         self.model_name = model_name
@@ -75,8 +85,7 @@ class ChatGLM(BasePredictor):
         else:
             answer = ''
         logits_processor.append(
-            InvalidScoreLogitsProcessor(
-                start_pos=20005 if 'slim' not in self.model_name else 5))
+            InvalidScoreLogitsProcessor(5))
         gen_kwargs = {
             "max_length": max_length,
             "do_sample": do_sample,
@@ -104,7 +113,8 @@ class ChatGLM(BasePredictor):
         input_length = len(batch_input['input_ids'][0])
         final_input_ids = torch.cat(
             [batch_input['input_ids'], batch_answer['input_ids'][:, :-2]],
-            dim=-1).cuda()
+            dim=-1)
+        final_input_ids = final_input_ids.to(model.device)
 
         attention_mask = model.get_masks(
             final_input_ids, device=final_input_ids.device)
