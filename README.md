@@ -17,9 +17,9 @@
 
 | 名称 | 大小 | 百度网盘 | 备注 |
 | ---- | ---- | ---- | ---- |
-| **小显存离线包** | 5.56 GB | [点击下载](https://pan.baidu.com/s/1UU2KoqABYGOCPjrhq8fLZw?pwd=cglm) | 使用 ChatGLM-6B-int4 权重的离线包，显存需求 8GB |
-| 大显存离线包 | 14.3 GB | [点击下载](https://pan.baidu.com/s/1w3GVPCO4I5m2rI9GvlEIYQ?pwd=cglm) | 使用 ChatGLM-6B 权重的离线包，显存需求 16GB |
-| 环境离线包 | 2.56 GB | [点击下载](https://pan.baidu.com/s/1JNhjUJ1B-tuCmsntLgqRYw?pwd=cglm) | 不带权重的离线包，启动之后可以自动下载模型，默认自动下载 ChatGLM-6B 权重。 |
+| **小显存离线包** | 5.4 GB | [点击下载](https://pan.baidu.com/s/1s7XPtDBoyOV5VOD4Onf3Ug?pwd=cglm) | 使用 ChatGLM-6B-int4 权重的离线包，显存需求 8GB |
+| 大显存离线包 | 14 GB | [点击下载](https://pan.baidu.com/s/1gL4GwWp6iNqh0CGwx6NGUA?pwd=cglm) | 使用 ChatGLM-6B 权重的离线包，显存需求 16GB |
+| 环境离线包 | 2.6 GB | [点击下载](https://pan.baidu.com/s/1gTKi8mKGWM5xhmAz724qSA?pwd=cglm) | 不带权重的离线包，启动之后可以自动下载模型，默认自动下载 ChatGLM-6B 权重。 |
 
 除了这些离线一键环境之外，你还可以在下面下载一些模型的权重，包括 `THUDM/chatglm-6b` 系列、`silver/chatglm-6b-slim` 系列、`BelleGroup/BELLE` 系列。
 
@@ -27,7 +27,11 @@
 
 下载好环境包之后，解压，然后运行 `start_offline.bat` 脚本，即可启动服务：
 
-![image](https://user-images.githubusercontent.com/10473170/229680404-0b28dfd4-382e-4cfc-9392-997f134c0242.png)
+<img width="734" alt="企业微信截图_16822982234979" src="https://user-images.githubusercontent.com/10473170/229680404-0b28dfd4-382e-4cfc-9392-997f134c0242.png">
+
+如果你想使用 API 的形式来调用，可以运行 `start_offline_api.bat` 启动 API 服务：
+
+<img width="734" alt="企业微信截图_16822982234979" src="https://user-images.githubusercontent.com/10473170/233877877-1a0a1daf-2cf1-41d1-9cd8-7f2ad8cb2427.png">
 
 ## 虚拟环境
 
