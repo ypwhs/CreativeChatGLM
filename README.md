@@ -109,6 +109,14 @@
 
 ![未命名项目](https://user-images.githubusercontent.com/10473170/227777930-6aa5981a-0695-40c7-b083-b76bb063c481.gif)
 
+### 重新对话
+
+你可以按照某个输入，重复生成对话，从而拿到满意的结果。
+
+### 使用视频
+
+![20u5z-svohg](https://user-images.githubusercontent.com/10473170/233827340-4973c0fd-2fc5-4941-8f8d-2216cbee8ed9.gif)
+
 # 实现原理
 
 这个方法并没有训练，没有修改官方发布的权重，而只是对推理的函数做了修改。
