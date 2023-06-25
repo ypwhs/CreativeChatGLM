@@ -1,13 +1,14 @@
+import traceback
 from glob import glob
 from huggingface_hub import snapshot_download
 
 model_name_list = [
-    'THUDM/chatglm-6b-int4-qe',
-    'THUDM/chatglm-6b-int4',
-    'THUDM/chatglm-6b',
+    # 'THUDM/chatglm-6b-int4-qe',
+    # 'THUDM/chatglm-6b-int4',
+    # 'THUDM/chatglm-6b',
     # 'THUDM/glm-10b-chinese',
 
-    'THUDM/chatglm2-6b,'
+    'THUDM/chatglm2-6b',
 
     # 'BelleGroup/BELLE-LLAMA-7B-2M-gptq',
     # 'BelleGroup/BELLE-7B-gptq',
@@ -45,6 +46,7 @@ for model_name in model_name_list:
             )
             break
         except:
+            traceback.print_exc()
             retry_times -= 1
             print(f'Retry download {model_name}, {retry_times} times left...')
     print(f'{model_name} downloaded')
