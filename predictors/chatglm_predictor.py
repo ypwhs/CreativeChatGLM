@@ -51,7 +51,8 @@ class ChatGLM(BasePredictor):
                 trust_remote_code=True,
                 resume_download=True,
                 low_cpu_mem_usage=True,
-                torch_dtype=torch.float16
+                torch_dtype=torch.float16,
+                device='cuda'
                 if self.device == 'cuda' else torch.float32,
                 device_map={'': self.device})
             if self.device == 'cpu':
