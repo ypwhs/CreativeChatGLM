@@ -31,7 +31,7 @@ else:
 
     print('Loading model')
     tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
-    model = AutoModel.from_pretrained(model_name, trust_remote_code=True).quantize(8).cuda()
+    model = AutoModel.from_pretrained(model_name, trust_remote_code=True)#.quantize(8).cuda()
     model = model.eval()
     print(f'Successfully loaded model {model_name}')
 
