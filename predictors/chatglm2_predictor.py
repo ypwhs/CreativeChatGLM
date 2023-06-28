@@ -62,15 +62,9 @@ class ChatGLM2(BasePredictor):
     @torch.no_grad()
     def stream_chat_continue(self,
                              model,
-                             tokenizer,
-                             query: str,
-                             history: List[Tuple[str, str]] = None,
-                             max_length: int = 2048,
-                             do_sample=True,
-                             top_p=0.7,
-                             temperature=0.95,
-                             logits_processor=None,
-                             **kwargs):
+                             tokenizer, query: str, history: List[Tuple[str, str]] = None, past_key_values=None,
+                             max_length: int = 8192, do_sample=True, top_p=0.8, temperature=0.8, logits_processor=None,
+                             return_past_key_values=False, **kwargs):
         if history is None:
             history = []
         if logits_processor is None:
