@@ -103,12 +103,11 @@ class ChatGLM2(BasePredictor):
             final_input_ids.position_ids += past_length
             attention_mask = final_input_ids.attention_mask
             attention_mask = torch.cat((attention_mask.new_ones(1, past_length), attention_mask), dim=1)
-            final_input_ids['attention_mask'] = attention_mask
+            batch_input['attention_mask'] = attention_mask
 
         batch_input['input_ids'] = final_input_ids
-        batch_input['attention_mask'] = attention_mask
 
-        input_ids = final_input_ids
+        # input_ids = final_input_ids
         # MASK, gMASK = self.model.config.bos_token_id - 4, self.model.config.bos_token_id - 3
         # mask_token = MASK if MASK in input_ids else gMASK
         # mask_positions = [seq.tolist().index(mask_token) for seq in input_ids]
@@ -116,7 +115,7 @@ class ChatGLM2(BasePredictor):
         #     input_ids, mask_positions, device=input_ids.device)
 
         for outputs in model.stream_generate(**batch_input, past_key_values=past_key_values,
-                                            return_past_key_values=return_past_key_values, **gen_kwargs):
+                                             return_past_key_values=return_past_key_values, **gen_kwargs):
             if return_past_key_values:
                 outputs, past_key_values = outputs
             outputs = outputs.tolist()[0][len(batch_input["input_ids"][0]):]
@@ -131,7 +130,7 @@ class ChatGLM2(BasePredictor):
 
 
 def test():
-    model_name = 'THUDM/chatglm2-6b'
+    model_name = 'chatglm2-6b'
 
     predictor = ChatGLM2(model_name)
     top_p = 0.95
@@ -148,5 +147,36 @@ def test():
         print(x[0][-1][1])
 
 
+def test2():
+    from chatglm2.modeling_chatglm import ChatGLMForConditionalGeneration
+    model_name = 'chatglm2-6b'
+    device = 'cuda'
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_name, trust_remote_code=True, resume_download=True)
+    model = ChatGLMForConditionalGeneration.from_pretrained(
+        model_name,
+        trust_remote_code=True,
+        resume_download=True,
+        low_cpu_mem_usage=True,
+        torch_dtype=torch.float16 if device == 'cuda' else torch.float32,
+        device_map={'': device})
+    model = model.eval()
+
+    query = '继续'
+    history = [('你是谁？', '我是张三丰，')]
+    max_length = 128
+    top_p = 0.95
+    temperature = 0.8
+
+    for response, new_history in model.stream_chat(
+            tokenizer=tokenizer,
+            query=query,
+            history=history,
+            max_length=max_length,
+            top_p=top_p,
+            temperature=temperature):
+        print(response, new_history)
+
+
 if __name__ == '__main__':
-    test()
+    test2()
