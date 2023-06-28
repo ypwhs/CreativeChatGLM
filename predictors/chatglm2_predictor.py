@@ -74,7 +74,7 @@ class ChatGLM2(BasePredictor):
         else:
             answer = ''
         logits_processor.append(
-            InvalidScoreLogitsProcessor(5))
+            InvalidScoreLogitsProcessor())
         gen_kwargs = {
             "max_length": max_length,
             "do_sample": do_sample,
@@ -83,18 +83,11 @@ class ChatGLM2(BasePredictor):
             "logits_processor": logits_processor,
             **kwargs
         }
-        if not history:
-            prompt = query
+
+        if past_key_values is None and not return_past_key_values:
+            batch_input = model.build_inputs(tokenizer, query, history=history)
         else:
-            prompt = ""
-            for i, (old_query, response) in enumerate(history):
-                if i != len(history) - 1:
-                    prompt += "[Round {}]\n问：{}\n答：{}\n".format(
-                        i, old_query, response)
-                else:
-                    prompt += "[Round {}]\n问：{}\n答：".format(i, old_query)
-        batch_input = tokenizer([prompt], return_tensors="pt", padding=True)
-        batch_input = batch_input.to(model.device)
+            batch_input = model.build_stream_inputs(tokenizer, query, history=history)
 
         batch_answer = tokenizer(answer, return_tensors="pt")
         batch_answer = batch_answer.to(model.device)
@@ -105,39 +98,53 @@ class ChatGLM2(BasePredictor):
             dim=-1)
         final_input_ids = final_input_ids.to(model.device)
 
-        attention_mask = model.get_masks(
-            final_input_ids, device=final_input_ids.device)
+        if past_key_values is not None:
+            past_length = past_key_values[0][0].shape[0]
+            final_input_ids.position_ids += past_length
+            attention_mask = final_input_ids.attention_mask
+            attention_mask = torch.cat((attention_mask.new_ones(1, past_length), attention_mask), dim=1)
+            final_input_ids['attention_mask'] = attention_mask
 
         batch_input['input_ids'] = final_input_ids
         batch_input['attention_mask'] = attention_mask
 
         input_ids = final_input_ids
-        MASK, gMASK = self.model.config.bos_token_id - 4, self.model.config.bos_token_id - 3
-        mask_token = MASK if MASK in input_ids else gMASK
-        mask_positions = [seq.tolist().index(mask_token) for seq in input_ids]
-        batch_input['position_ids'] = self.model.get_position_ids(
-            input_ids, mask_positions, device=input_ids.device)
+        # MASK, gMASK = self.model.config.bos_token_id - 4, self.model.config.bos_token_id - 3
+        # mask_token = MASK if MASK in input_ids else gMASK
+        # mask_positions = [seq.tolist().index(mask_token) for seq in input_ids]
+        # batch_input['position_ids'] = self.model.get_position_ids(
+        #     input_ids, mask_positions, device=input_ids.device)
 
-        for outputs in model.stream_generate(**batch_input, **gen_kwargs):
-            outputs = outputs.tolist()[0][input_length:]
+        for outputs in model.stream_generate(**batch_input, past_key_values=past_key_values,
+                                            return_past_key_values=return_past_key_values, **gen_kwargs):
+            if return_past_key_values:
+                outputs, past_key_values = outputs
+            outputs = outputs.tolist()[0][len(batch_input["input_ids"][0]):]
             response = tokenizer.decode(outputs)
-            response = model.process_response(response)
-            yield parse_codeblock(response)
+            if response and response[-1] != "�":
+                response = model.process_response(response)
+                new_history = history + [(query, response)]
+                if return_past_key_values:
+                    yield response, new_history, past_key_values
+                else:
+                    yield response, new_history
 
 
 def test():
-    model_name = 'THUDM/chatglm-6b-int4'
-    # model_name = 'silver/chatglm-6b-int4-slim'
+    model_name = 'THUDM/chatglm2-6b'
 
-    predictor = ChatGLM(model_name)
+    predictor = ChatGLM2(model_name)
     top_p = 0.95
     max_length = 128
     temperature = 0.8
 
     line = '你是谁？'
+    last_message = '我是张三丰，'
     print(line)
-    for x in predictor.predict_continue(line, '我是张三丰，', max_length, top_p,
-                                        temperature, [True], None):
+    for x in predictor.predict_continue(
+            query=line, latest_message=last_message,
+            max_length=max_length, top_p=top_p, temperature=temperature,
+            allow_generate=[True], history=None, last_state=[[], None, None]):
         print(x[0][-1][1])
 
 
