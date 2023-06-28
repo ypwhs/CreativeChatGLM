@@ -106,7 +106,6 @@ class ChatGLM2(BasePredictor):
             final_input_ids['attention_mask'] = attention_mask
 
         batch_input['input_ids'] = final_input_ids
-        batch_input['attention_mask'] = attention_mask
 
         input_ids = final_input_ids
         # MASK, gMASK = self.model.config.bos_token_id - 4, self.model.config.bos_token_id - 3
@@ -124,10 +123,7 @@ class ChatGLM2(BasePredictor):
             if response and response[-1] != "�":
                 response = model.process_response(response)
                 new_history = history + [(query, response)]
-                if return_past_key_values:
-                    yield response, new_history, past_key_values
-                else:
-                    yield response, new_history
+                yield parse_codeblock(response)
 
 
 def test():
