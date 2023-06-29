@@ -105,11 +105,12 @@ class ChatGLM2(BasePredictor):
             dim=-1)
         final_input_ids = final_input_ids.to(model.device)
 
-        batch_input['input_ids'] = final_input_ids
-        batch_input['position_ids'] = model.get_position_ids(final_input_ids, device=final_input_ids.device)
-        batch_input['attention_mask'] = torch.ones(final_input_ids.shape, dtype=torch.long, device=final_input_ids.device)
+        final_input = {}
+        final_input['input_ids'] = final_input_ids
+        final_input['position_ids'] = model.get_position_ids(final_input_ids, device=final_input_ids.device)
+        final_input['attention_mask'] = torch.ones(final_input_ids.shape, dtype=torch.long, device=final_input_ids.device)
 
-        for outputs in model.stream_generate(**batch_input, past_key_values=past_key_values,
+        for outputs in model.stream_generate(**final_input, past_key_values=past_key_values,
                                              return_past_key_values=return_past_key_values, **gen_kwargs):
             if return_past_key_values:
                 outputs, past_key_values = outputs
