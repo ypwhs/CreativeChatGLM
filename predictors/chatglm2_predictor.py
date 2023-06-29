@@ -126,7 +126,7 @@ def test():
     predictor = ChatGLM2(model_name)
     top_p = 0.01
     max_length = 128
-    temperature = 0.8
+    temperature = 0.01
 
     history = []
     line = '你是谁？'
