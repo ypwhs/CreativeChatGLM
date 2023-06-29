@@ -84,26 +84,26 @@ class ChatGLM2(BasePredictor):
             **kwargs
         }
 
-        if past_key_values is None and not return_past_key_values:
-            batch_input = model.build_inputs(tokenizer, query, history=history)
+        if not history:
+            prompt = query
         else:
-            batch_input = model.build_stream_inputs(tokenizer, query, history=history)
+            prompt = ""
+            for i, (old_query, response) in enumerate(history):
+                if i != len(history) - 1:
+                    prompt += "[Round {}]\n\n问：{}\n\n答：{}\n\n".format(
+                        i, old_query, response)
+                else:
+                    prompt += "[Round {}]\n\n问：{}\n\n答：".format(i, old_query)
+        batch_input = tokenizer([prompt], return_tensors="pt")
+        batch_input = batch_input.to(model.device)
 
         batch_answer = tokenizer(answer, return_tensors="pt")
         batch_answer = batch_answer.to(model.device)
 
-        input_length = len(batch_input['input_ids'][0])
         final_input_ids = torch.cat(
             [batch_input['input_ids'], batch_answer['input_ids']],
             dim=-1)
         final_input_ids = final_input_ids.to(model.device)
-
-        if past_key_values is not None:
-            past_length = past_key_values[0][0].shape[0]
-            final_input_ids.position_ids += past_length
-            attention_mask = final_input_ids.attention_mask
-            attention_mask = torch.cat((attention_mask.new_ones(1, past_length), attention_mask), dim=1)
-            batch_input['attention_mask'] = attention_mask
 
         batch_input['input_ids'] = final_input_ids
         batch_input['position_ids'] = model.get_position_ids(final_input_ids, device=final_input_ids.device)
@@ -125,16 +125,17 @@ def test():
 
     predictor = ChatGLM2(model_name)
     top_p = 0.01
-    max_length = 1024
+    max_length = 128
     temperature = 0.8
 
+    history = []
     line = '你是谁？'
-    last_message = '我是张三丰，'
+    last_message = '我是张三丰，我是武当派'
     print(line)
     for x in predictor.predict_continue(
             query=line, latest_message=last_message,
             max_length=max_length, top_p=top_p, temperature=temperature,
-            allow_generate=[True], history=None, last_state=[[], None, None]):
+            allow_generate=[True], history=history, last_state=[[], None, None]):
         print(x[0][-1][1])
 
 
