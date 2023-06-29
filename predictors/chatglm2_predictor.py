@@ -93,7 +93,7 @@ class ChatGLM2(BasePredictor):
                     prompt += "[Round {}]\n\n问：{}\n\n答：{}\n\n".format(
                         i, old_query, response)
                 else:
-                    prompt += "[Round {}]\n\n问：{}\n\n答：".format(i, old_query)
+                    prompt += "[Round {}]\n\n问：{}\n\n答：\n\n".format(i, old_query)
         batch_input = tokenizer([prompt], return_tensors="pt")
         batch_input = batch_input.to(model.device)
 
@@ -101,7 +101,7 @@ class ChatGLM2(BasePredictor):
         batch_answer = batch_answer.to(model.device)
 
         final_input_ids = torch.cat(
-            [batch_input['input_ids'], batch_answer['input_ids']],
+            [batch_input['input_ids'], batch_answer['input_ids'][:, 3:]],
             dim=-1)
         final_input_ids = final_input_ids.to(model.device)
 
