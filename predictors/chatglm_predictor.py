@@ -137,7 +137,7 @@ class ChatGLM(BasePredictor):
 
 
 def test():
-    model_name = 'THUDM/chatglm-6b-int4'
+    model_name = 'chatglm-6b'
     # model_name = 'silver/chatglm-6b-int4-slim'
 
     predictor = ChatGLM(model_name)
@@ -146,9 +146,12 @@ def test():
     temperature = 0.8
 
     line = '你是谁？'
+    last_message = '我是张三丰，'
     print(line)
-    for x in predictor.predict_continue(line, '我是张三丰，', max_length, top_p,
-                                        temperature, [True], None):
+    for x in predictor.predict_continue(
+            query=line, latest_message=last_message,
+            max_length=max_length, top_p=top_p, temperature=temperature,
+            allow_generate=[True], history=None, last_state=[[], None, None]):
         print(x[0][-1][1])
 
 
