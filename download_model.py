@@ -9,6 +9,7 @@ model_name_list = [
     # 'THUDM/glm-10b-chinese',
 
     'THUDM/chatglm2-6b',
+    'THUDM/chatglm2-6b-int4',
 
     # 'BelleGroup/BELLE-LLAMA-7B-2M-gptq',
     # 'BelleGroup/BELLE-7B-gptq',
