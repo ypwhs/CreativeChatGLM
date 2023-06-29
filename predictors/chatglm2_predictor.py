@@ -94,7 +94,7 @@ class ChatGLM2(BasePredictor):
 
         input_length = len(batch_input['input_ids'][0])
         final_input_ids = torch.cat(
-            [batch_input['input_ids'], batch_answer['input_ids'][:, :-2]],
+            [batch_input['input_ids'], batch_answer['input_ids']],
             dim=-1)
         final_input_ids = final_input_ids.to(model.device)
 
@@ -106,13 +106,8 @@ class ChatGLM2(BasePredictor):
             batch_input['attention_mask'] = attention_mask
 
         batch_input['input_ids'] = final_input_ids
-
-        # input_ids = final_input_ids
-        # MASK, gMASK = self.model.config.bos_token_id - 4, self.model.config.bos_token_id - 3
-        # mask_token = MASK if MASK in input_ids else gMASK
-        # mask_positions = [seq.tolist().index(mask_token) for seq in input_ids]
-        # batch_input['position_ids'] = self.model.get_position_ids(
-        #     input_ids, mask_positions, device=input_ids.device)
+        batch_input['position_ids'] = model.get_position_ids(final_input_ids, device=final_input_ids.device)
+        batch_input['attention_mask'] = torch.ones(final_input_ids.shape, dtype=torch.long, device=final_input_ids.device)
 
         for outputs in model.stream_generate(**batch_input, past_key_values=past_key_values,
                                              return_past_key_values=return_past_key_values, **gen_kwargs):
@@ -122,19 +117,15 @@ class ChatGLM2(BasePredictor):
             response = tokenizer.decode(outputs)
             if response and response[-1] != "�":
                 response = model.process_response(response)
-                new_history = history + [(query, response)]
-                if return_past_key_values:
-                    yield response, new_history, past_key_values
-                else:
-                    yield response, new_history
+                yield parse_codeblock(response)
 
 
 def test():
     model_name = 'chatglm2-6b'
 
     predictor = ChatGLM2(model_name)
-    top_p = 0.95
-    max_length = 128
+    top_p = 0.01
+    max_length = 1024
     temperature = 0.8
 
     line = '你是谁？'
@@ -179,4 +170,4 @@ def test2():
 
 
 if __name__ == '__main__':
-    test2()
+    test()
