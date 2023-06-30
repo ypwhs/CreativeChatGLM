@@ -1,9 +1,9 @@
 protobuf~=3.20.0
-transformers~=4.27.1
+transformers~=4.30.1
 icetk~=0.0.4
 cpm_kernels~=1.0.11
 torch>=1.10
-gradio~=3.25.0
+gradio~=3.34.0
 numpy~=1.23.0
 accelerate~=0.18.0
 mdtex2html~=1.2.0
