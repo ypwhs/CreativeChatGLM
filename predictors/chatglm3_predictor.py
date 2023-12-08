@@ -122,7 +122,7 @@ class ChatGLM3(BasePredictor):
 
 
 def test():
-    model_name = 'chatglm3-6b'
+    model_name = 'THUDM/chatglm3-6b'
 
     predictor = ChatGLM3(model_name)
     top_p = 0.01
@@ -141,8 +141,8 @@ def test():
 
 
 def test2():
-    from chatglm2.modeling_chatglm import ChatGLMForConditionalGeneration
-    model_name = 'chatglm3-6b'
+    from chatglm3.modeling_chatglm import ChatGLMForConditionalGeneration
+    model_name = 'THUDM/chatglm3-6b'
     device = 'cuda'
     tokenizer = AutoTokenizer.from_pretrained(
         model_name, trust_remote_code=True, resume_download=True)
@@ -156,7 +156,7 @@ def test2():
     model = model.eval()
 
     query = '继续'
-    history = [('你是谁？', '我是张三丰，')]
+    history = [{'role': 'user', 'content': '你是谁？'}, {'role': 'system', 'content': '我是张三丰，'}]
     max_length = 128
     top_p = 0.95
     temperature = 0.8
@@ -172,4 +172,4 @@ def test2():
 
 
 if __name__ == '__main__':
-    test()
+    test2()
