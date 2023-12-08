@@ -10,7 +10,10 @@ print('Done'.center(64, '-'))
 # 加载模型
 model_name = 'THUDM/chatglm2-6b'
 
-if 'chatglm2' in model_name.lower():
+if 'chatglm3' in model_name.lower():
+    from predictors.chatglm3_predictor import ChatGLM3
+    predictor = ChatGLM3(model_name)
+elif 'chatglm2' in model_name.lower():
     from predictors.chatglm2_predictor import ChatGLM2
     predictor = ChatGLM2(model_name)
 elif 'chatglm' in model_name.lower():
