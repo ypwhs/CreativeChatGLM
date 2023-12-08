@@ -1,5 +1,8 @@
 def test_model(model_name):
-    if 'chatglm2' in model_name.lower():
+    if 'chatglm3' in model_name.lower():
+        from predictors.chatglm3_predictor import ChatGLM3
+        predictor = ChatGLM3(model_name)
+    elif 'chatglm2' in model_name.lower():
         from predictors.chatglm2_predictor import ChatGLM2
         predictor = ChatGLM2(model_name)
     elif 'chatglm' in model_name.lower():
