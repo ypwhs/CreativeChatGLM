@@ -44,6 +44,8 @@ for model_name in model_name_list:
             snapshot_download(
                 repo_id=model_name,
                 resume_download=True,
+                max_workers=2,
+                # proxies={'https': 'http://127.0.0.1:7890'}
             )
             snapshot_download(
                 repo_id=model_name,
