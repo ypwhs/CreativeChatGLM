@@ -60,7 +60,7 @@ class ChatGLM3(BasePredictor):
         )
 
     @torch.inference_mode()
-    def stream_chat_continue(self, tokenizer, query: str, history: List[Dict] = None, role: str = "user",
+    def stream_chat_continue(self, model, tokenizer, query: str, history: List[Dict] = None, role: str = "user",
                              past_key_values=None, max_length: int = 8192, do_sample=True, top_p=0.8, temperature=0.8,
                              logits_processor=None, return_past_key_values=False, **kwargs):
         if history is None:
@@ -121,16 +121,16 @@ def test():
     max_length = 128
     temperature = 0.01
 
-    history = [{'role': 'user', 'content': '你是谁？'}, ]
+    history = []
     query = '你是谁？'
     last_message = '我是张三丰，我是武当派'
 
     print(query)
-    for x in predictor.predict_continue(
+    for x in predictor.predict_continue_dict(
             query=query, latest_message=last_message,
             max_length=max_length, top_p=top_p, temperature=temperature,
             allow_generate=[True], history=history, last_state=[[], None, None]):
-        print(x[0][-1][1])
+        print(x[0][-1])
 
 
 def test2():
@@ -149,7 +149,7 @@ def test2():
     model = model.eval()
 
     query = '继续'
-    history = [{'role': 'user', 'content': '你是谁？'}, {'role': 'system', 'content': '我是张三丰，'}]
+    history = [{'role': 'user', 'content': '你是谁？'}, {'role': 'assistant', 'content': '我是张三丰，'}]
     max_length = 128
     top_p = 0.95
     temperature = 0.8
