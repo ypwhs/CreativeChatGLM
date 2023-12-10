@@ -1,5 +1,5 @@
 import time
-from typing import List, Tuple
+from typing import List, Dict
 
 import torch
 from transformers import AutoModel, AutoTokenizer
@@ -59,66 +59,58 @@ class ChatGLM3(BasePredictor):
             f'Successfully loaded model {model_name}, time cost: {end - start:.2f}s'
         )
 
-    @torch.no_grad()
-    def stream_chat_continue(self,
-                             model,
-                             tokenizer, query: str, history: List[Tuple[str, str]] = None, past_key_values=None,
-                             max_length: int = 8192, do_sample=True, top_p=0.8, temperature=0.8, logits_processor=None,
-                             return_past_key_values=False, **kwargs):
+    @torch.inference_mode()
+    def stream_chat_continue(self, tokenizer, query: str, history: List[Dict] = None, role: str = "user",
+                             past_key_values=None, max_length: int = 8192, do_sample=True, top_p=0.8, temperature=0.8,
+                             logits_processor=None, return_past_key_values=False, **kwargs):
         if history is None:
             history = []
         if logits_processor is None:
             logits_processor = LogitsProcessorList()
-        if len(history) > 0:
-            answer = history[-1][1]
-        else:
-            answer = ''
-        logits_processor.append(
-            InvalidScoreLogitsProcessor())
-        gen_kwargs = {
-            "max_length": max_length,
-            "do_sample": do_sample,
-            "top_p": top_p,
-            "temperature": temperature,
-            "logits_processor": logits_processor,
-            **kwargs
-        }
+        logits_processor.append(InvalidScoreLogitsProcessor())
+        eos_token_id = [tokenizer.eos_token_id, tokenizer.get_command("<|user|>"),
+                        tokenizer.get_command("<|observation|>")]
+        gen_kwargs = {"max_length": max_length, "do_sample": do_sample, "top_p": top_p,
+                      "temperature": temperature, "logits_processor": logits_processor, **kwargs}
 
         if not history:
             prompt = query
         else:
             prompt = ""
-            for i, (old_query, response) in enumerate(history):
+            for i, entry in enumerate(history):
+                role_prefix = "<|{}|>".format(entry["role"])
                 if i != len(history) - 1:
-                    prompt += "[Round {}]\n\n问：{}\n\n答：{}\n\n".format(
-                        i, old_query, response)
+                    prompt += "{} {}\n\n".format(role_prefix, entry["content"])
                 else:
-                    prompt += "[Round {}]\n\n问：{}\n\n答：\n\n".format(i, old_query)
+                    prompt += "{} {}\n\n".format(role_prefix, "")
         batch_input = tokenizer([prompt], return_tensors="pt")
-        batch_input = batch_input.to(model.device)
+        batch_input = batch_input.to(self.device)
 
-        batch_answer = tokenizer(answer, return_tensors="pt")
-        batch_answer = batch_answer.to(model.device)
+        if past_key_values is not None:
+            past_length = past_key_values[0][0].shape[0]
+            if self.transformer.pre_seq_len is not None:
+                past_length -= self.transformer.pre_seq_len
+            batch_input.position_ids += past_length
+            attention_mask = batch_input.attention_mask
+            attention_mask = torch.cat((attention_mask.new_ones(1, past_length), attention_mask), dim=1)
+            batch_input['attention_mask'] = attention_mask
 
-        final_input_ids = torch.cat(
-            [batch_input['input_ids'], batch_answer['input_ids'][:, 3:]],
-            dim=-1)
-        final_input_ids = final_input_ids.to(model.device)
+        history.append({"role": role, "content": query})
 
-        final_input = {}
-        final_input['input_ids'] = final_input_ids
-        final_input['position_ids'] = model.get_position_ids(final_input_ids, device=final_input_ids.device)
-        final_input['attention_mask'] = torch.ones(final_input_ids.shape, dtype=torch.long, device=final_input_ids.device)
-
-        for outputs in model.stream_generate(**final_input, past_key_values=past_key_values,
-                                             return_past_key_values=return_past_key_values, **gen_kwargs):
+        for outputs in self.stream_generate(**batch_input, past_key_values=past_key_values,
+                                            eos_token_id=eos_token_id, return_past_key_values=return_past_key_values,
+                                            **gen_kwargs):
             if return_past_key_values:
                 outputs, past_key_values = outputs
-            outputs = outputs.tolist()[0][len(batch_input["input_ids"][0]):]
+            outputs = outputs.tolist()[0][len(batch_input["input_ids"][0]):-1]
             response = tokenizer.decode(outputs)
             if response and response[-1] != "�":
-                response = model.process_response(response)
+                response, new_history = self.process_response(response, history)
                 yield parse_codeblock(response)
+                # if return_past_key_values:
+                #     yield response, new_history, past_key_values
+                # else:
+                #     yield response, new_history
 
 
 def test():
@@ -129,12 +121,13 @@ def test():
     max_length = 128
     temperature = 0.01
 
-    history = []
-    line = '你是谁？'
+    history = [{'role': 'user', 'content': '你是谁？'}, ]
+    query = '你是谁？'
     last_message = '我是张三丰，我是武当派'
-    print(line)
+
+    print(query)
     for x in predictor.predict_continue(
-            query=line, latest_message=last_message,
+            query=query, latest_message=last_message,
             max_length=max_length, top_p=top_p, temperature=temperature,
             allow_generate=[True], history=history, last_state=[[], None, None]):
         print(x[0][-1][1])
@@ -172,4 +165,4 @@ def test2():
 
 
 if __name__ == '__main__':
-    test2()
+    test()
