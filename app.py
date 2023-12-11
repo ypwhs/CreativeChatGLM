@@ -8,7 +8,7 @@ for name, val in collect_env().items():
 print('Done'.center(64, '-'))
 
 # 加载模型
-model_name = 'THUDM/chatglm2-6b'
+model_name = 'THUDM/chatglm3-6b'
 
 if 'chatglm3' in model_name.lower():
     from predictors.chatglm3_predictor import ChatGLM3
