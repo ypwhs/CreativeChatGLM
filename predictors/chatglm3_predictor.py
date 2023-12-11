@@ -134,8 +134,7 @@ class ChatGLM3(BasePredictor):
             if response and response[-1] != "�":
                 response, new_history = model.process_response(
                     response, history)
-                parsed_response = parse_codeblock(response)
-                yield parsed_response
+                yield response
 
 
 def test():
