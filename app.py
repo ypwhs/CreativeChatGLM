@@ -34,7 +34,10 @@ else:
 
 
 def revise(history, latest_message):
-    history[-1] = (history[-1][0], latest_message)
+    if isinstance(history[-1], tuple):
+        history[-1] = (history[-1][0], latest_message)
+    elif isinstance(history[-1], dict):
+        history[-1]['content'] = latest_message
     return history, ''
 
 
