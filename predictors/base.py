@@ -84,6 +84,10 @@ class BasePredictor(ABC):
             history_colorful = copy.deepcopy(history)
             colorful_response = f'<span style="color:red">{latest_message}</span>{response[len(latest_message):]}'
             history_colorful[-1]["content"] = colorful_response
-            yield history_colorful[-1]["content"], '', ''
+            history_tuple = []
+            for i in range(0, len(history_colorful), 2):
+                history_tuple.append((history_colorful[i]["content"],
+                                      history_colorful[i + 1]["content"]))
+            yield history_tuple, '', ''
             if not allow_generate[0]:
                 break
