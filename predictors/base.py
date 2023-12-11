@@ -80,12 +80,10 @@ class BasePredictor(ABC):
                 max_length=max_length,
                 top_p=top_p,
                 temperature=temperature):
-            # 更新最后一条历史记录的回答
             history[-1]["content"] = response
             history_colorful = copy.deepcopy(history)
-            # 创建一个带有颜色的响应，这里的逻辑可能需要根据实际情况进行调整
             colorful_response = f'<span style="color:red">{latest_message}</span>{response[len(latest_message):]}'
             history_colorful[-1]["content"] = colorful_response
-            yield history_colorful, '', ''
+            yield history_colorful[-1]["content"], '', ''
             if not allow_generate[0]:
                 break
