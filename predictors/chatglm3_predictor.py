@@ -1,4 +1,5 @@
 import time
+import json
 from typing import List, Dict
 
 import torch
@@ -95,28 +96,31 @@ class ChatGLM3(BasePredictor):
             **kwargs
         }
 
-        if past_key_values is None:
-            inputs = tokenizer.build_chat_input(
-                query, history=history, role=role)
-        else:
-            inputs = tokenizer.build_chat_input(query, role=role)
-        inputs = inputs.to(model.device)
+        answer = history[-1]["content"]
 
-        if past_key_values is not None:
-            past_length = past_key_values[0][0].shape[0]
-            if model.transformer.pre_seq_len is not None:
-                past_length -= model.transformer.pre_seq_len
-            inputs.position_ids += past_length
-            attention_mask = inputs.attention_mask
-            attention_mask = torch.cat(
-                (attention_mask.new_ones(1, past_length), attention_mask),
-                dim=1)
-            inputs['attention_mask'] = attention_mask
+        input_ids = []
+        for item in history[:-1]:
+            content = item["content"]
+            if item["role"] == "system" and "tools" in item:
+                content = content + "\n" + json.dumps(item["tools"], indent=4, ensure_ascii=False)
+            input_ids.extend(tokenizer.build_single_message(item["role"], item.get("metadata", ""), content))
+        batch_input = tokenizer.batch_encode_plus([input_ids], return_tensors="pt", is_split_into_words=True)
+        batch_input = batch_input.to(model.device)
 
-        history.append({"role": role, "content": query})
+        answer_input_ids = tokenizer.build_single_message("assistant", "", answer)
+        batch_answer = tokenizer.batch_encode_plus([answer_input_ids], return_tensors="pt", is_split_into_words=True)
+        batch_answer = batch_answer.to(model.device)
+
+        final_input_ids = torch.cat([batch_input['input_ids'], batch_answer['input_ids'][:, 2:]], dim=-1)
+        final_input_ids = final_input_ids.to(model.device)
+
+        final_input = {}
+        final_input['input_ids'] = final_input_ids
+        final_input['position_ids'] = model.get_position_ids(final_input_ids, device=final_input_ids.device)
+        final_input['attention_mask'] = torch.ones(final_input_ids.shape, dtype=torch.long, device=final_input_ids.device)
 
         for outputs in model.stream_generate(
-                **inputs,
+                **final_input,
                 past_key_values=past_key_values,
                 eos_token_id=eos_token_id,
                 return_past_key_values=return_past_key_values,
@@ -124,7 +128,7 @@ class ChatGLM3(BasePredictor):
             if return_past_key_values:
                 outputs, past_key_values = outputs
             outputs = outputs.tolist()[0][
-                len(inputs["input_ids"]
+                len(batch_input["input_ids"]
                     [0]):-1]  # Exclude the last token if it's EOS
             response = tokenizer.decode(outputs)
             if response and response[-1] != "�":
