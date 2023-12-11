@@ -23,14 +23,21 @@ class BasePredictor(ABC):
     def __init__(self, model_name):
         self.model = None
         self.tokenizer = None
+        self.model_name = model_name
 
     @abstractmethod
     def stream_chat_continue(self, *args, **kwargs):
         raise NotImplementedError
 
-    def predict_continue(self, query, latest_message, max_length, top_p,
-                         temperature, allow_generate, history, last_state,
-                         *args, **kwargs):
+    def predict_continue(self, *args, **kwargs):
+        if 'chatglm3' in self.model_name:
+            yield from self.predict_continue_dict(*args, **kwargs)
+        else:
+            yield from self.predict_continue_tuple(*args, **kwargs)
+
+    def predict_continue_tuple(self, query, latest_message, max_length, top_p,
+                               temperature, allow_generate, history,
+                               last_state, *args, **kwargs):
         last_state[0] = copy.deepcopy(history)
         last_state[1] = query
         last_state[2] = latest_message
