@@ -11,7 +11,7 @@ import sys
 
 # 加载模型
 # model_name = 'THUDM/chatglm-6b'
-model_name = 'THUDM/chatglm-6b-int4'
+model_name = 'THUDM/chatglm3-6b'
 
 if 'chatglm' in model_name.lower():
     from predictors.chatglm_predictor import ChatGLM
