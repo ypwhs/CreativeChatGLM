@@ -17,11 +17,12 @@
 
 | 名称 | 大小      | 百度网盘 | 备注 |
 | ---- |---------| ---- | ---- |
-| **小显存离线包** | 5.3 GB  | [点击下载](https://pan.baidu.com/s/1NgY-i2CXh50vAEhr9N-1EQ?pwd=cglm) | 使用 ChatGLM-6B-int4 权重的离线包，显存需求 8GB |
-| 大显存离线包 | 11.8 GB | [点击下载](https://pan.baidu.com/s/19Sx8pBm-BesSQMPd9Zymug?pwd=cglm) | 使用 ChatGLM-6B 权重的离线包，显存需求 16GB |
-| 环境离线包 | 2.6 GB  | [点击下载](https://pan.baidu.com/s/1Es-Sr8tpc17q69W_RkrlsA?pwd=cglm) | 不带权重的离线包，启动之后可以自动下载模型，默认自动下载 ChatGLM-6B 权重。 |
+| **小显存离线包** | 5.3 GB  | [点击下载](https://pan.baidu.com/s/1NgY-i2CXh50vAEhr9N-1EQ?pwd=cglm) | chatglm2-6b-int4 离线包，显存需求 8GB |
+| 大显存离线包 | 11.5 GB | [点击下载](https://pan.baidu.com/s/19Sx8pBm-BesSQMPd9Zymug?pwd=cglm) | chatglm3-6b 离线包，显存需求 16GB |
+| 长文本离线包 | 11.5 GB | [点击下载](https://pan.baidu.com/s/19Sx8pBm-BesSQMPd9Zymug?pwd=cglm) | chatglm3-6b-128k 离线包，显存需求 16GB |
+| 环境离线包 | 2.6 GB  | [点击下载](https://pan.baidu.com/s/1Es-Sr8tpc17q69W_RkrlsA?pwd=cglm) | 不带权重的环境包，启动之后自动下载 chatglm2-6b-int4 权重。 |
 
-除了这些离线一键环境之外，你还可以在下面下载一些模型的权重，包括 `THUDM/chatglm-6b` 系列、`silver/chatglm-6b-slim` 系列、`BelleGroup/BELLE` 系列。
+除了这些一键环境包之外，你还可以在下面下载更多模型的权重。
 
 * 百度网盘链接：[https://pan.baidu.com/s/1pnIEj66scZOswHm8oivXmw?pwd=cglm](https://pan.baidu.com/s/1pnIEj66scZOswHm8oivXmw?pwd=cglm)
 
