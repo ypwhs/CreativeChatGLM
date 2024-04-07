@@ -7,11 +7,11 @@ from huggingface_hub import snapshot_download
 
 model_name_list = [
     # 'THUDM/chatglm-6b-int4-qe',
-    # 'THUDM/chatglm-6b-int4',
-    # 'THUDM/chatglm-6b',
+    'THUDM/chatglm-6b-int4',
+    'THUDM/chatglm-6b',
     # 'THUDM/glm-10b-chinese',
 
-    # 'THUDM/chatglm2-6b',
+    'THUDM/chatglm2-6b',
     'THUDM/chatglm2-6b-int4',
 
     'THUDM/chatglm3-6b',
