@@ -15,7 +15,6 @@ model_name_list = [
     'THUDM/chatglm2-6b-int4',
 
     'THUDM/chatglm3-6b',
-    'THUDM/chatglm-6b-int4',
     'THUDM/chatglm3-6b-128k',
 
     # 'BelleGroup/BELLE-LLAMA-7B-2M-gptq',
