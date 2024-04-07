@@ -17,21 +17,22 @@
 
 | 名称 | 大小      | 百度网盘 | 备注 |
 | ---- |---------| ---- | ---- |
-| **小显存离线包** | 5.3 GB  | [点击下载](https://pan.baidu.com/s/1NgY-i2CXh50vAEhr9N-1EQ?pwd=cglm) | 使用 ChatGLM-6B-int4 权重的离线包，显存需求 8GB |
-| 大显存离线包 | 11.8 GB | [点击下载](https://pan.baidu.com/s/19Sx8pBm-BesSQMPd9Zymug?pwd=cglm) | 使用 ChatGLM-6B 权重的离线包，显存需求 16GB |
-| 环境离线包 | 2.6 GB  | [点击下载](https://pan.baidu.com/s/1Es-Sr8tpc17q69W_RkrlsA?pwd=cglm) | 不带权重的离线包，启动之后可以自动下载模型，默认自动下载 ChatGLM-6B 权重。 |
+| **小显存离线包** | 5.3 GB  | [点击下载](https://pan.baidu.com/s/1fI1JWBE7KP7cJsoD-dL38g?pwd=cglm) | chatglm2-6b-int4 离线包，显存需求 8GB |
+| 大显存离线包 | 11.5 GB | [点击下载](https://pan.baidu.com/s/10oUwW2DUMDFk3RuIkaqGbA?pwd=cglm) | chatglm3-6b 离线包，显存需求 16GB |
+| 长文本离线包 | 11.5 GB | [点击下载](https://pan.baidu.com/s/1kbeTdPcUmYd16IE0stXnTA?pwd=cglm) | chatglm3-6b-128k 离线包，显存需求 16GB |
+| 环境离线包 | 2.6 GB  | [点击下载](https://pan.baidu.com/s/1Kt9eZlgXJ03bVwIM22IR6w?pwd=cglm) | 不带权重的环境包，启动之后自动下载 chatglm2-6b-int4 权重。 |
 
-除了这些离线一键环境之外，你还可以在下面下载一些模型的权重，包括 `THUDM/chatglm-6b` 系列、`silver/chatglm-6b-slim` 系列、`BelleGroup/BELLE` 系列。
+除了这些一键环境包之外，你还可以在下面下载更多模型的权重。
 
 * 百度网盘链接：[https://pan.baidu.com/s/1pnIEj66scZOswHm8oivXmw?pwd=cglm](https://pan.baidu.com/s/1pnIEj66scZOswHm8oivXmw?pwd=cglm)
 
 下载好环境包之后，解压，然后运行 `start_offline.bat` 脚本，即可启动服务：
 
-<img width="734" alt="企业微信截图_16822982234979" src="https://user-images.githubusercontent.com/10473170/229680404-0b28dfd4-382e-4cfc-9392-997f134c0242.png">
+![Snipaste_2024-04-07_16-14-54](https://github.com/ypwhs/CreativeChatGLM/assets/10473170/7ab0c0e8-9ada-43ad-b237-ba0f2008bdac)
 
 如果你想使用 API 的形式来调用，可以运行 `start_offline_api.bat` 启动 API 服务：
 
-<img width="734" alt="企业微信截图_16822982234979" src="https://user-images.githubusercontent.com/10473170/233877877-1a0a1daf-2cf1-41d1-9cd8-7f2ad8cb2427.png">
+![Snipaste_2024-04-07_16-16-01](https://github.com/ypwhs/CreativeChatGLM/assets/10473170/959c1742-da2e-4b37-b40f-6fb96c53ab89)
 
 ## 虚拟环境
 

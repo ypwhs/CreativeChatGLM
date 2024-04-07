@@ -15,21 +15,11 @@ model_name_list = [
     'THUDM/chatglm2-6b-int4',
 
     'THUDM/chatglm3-6b',
-
-    # 'BelleGroup/BELLE-LLAMA-7B-2M-gptq',
-    # 'BelleGroup/BELLE-7B-gptq',
-    # 'BelleGroup/BELLE-LLAMA-7B-2M',
-    # 'BelleGroup/BELLE-7B-2M',
+    'THUDM/chatglm3-6b-128k',
 
     # 'silver/chatglm-6b-slim',
     # 'silver/chatglm-6b-int4-slim',
     # 'silver/chatglm-6b-int4-qe-slim',
-
-    # 'fnlp/moss-moon-003-base',
-    # 'fnlp/moss-moon-003-sft',
-    # 'fnlp/moss-moon-003-sft-plugin',
-    # 'fnlp/moss-moon-003-sft-int4',
-    # 'fnlp/moss-moon-003-sft-plugin-int4'
 ]
 
 for model_name in model_name_list:

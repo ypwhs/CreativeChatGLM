@@ -38,9 +38,9 @@ def test_model(model_name):
 
 def main():
     model_list = [
-        'THUDM/chatglm2-6b',
         'THUDM/chatglm2-6b-int4',
         'THUDM/chatglm3-6b',
+        'THUDM/chatglm3-6b-128k',
     ]
     for model_name in model_list:
         print(f'Testing {model_name}')
