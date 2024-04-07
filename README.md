@@ -28,11 +28,11 @@
 
 下载好环境包之后，解压，然后运行 `start_offline.bat` 脚本，即可启动服务：
 
-<img width="734" alt="企业微信截图_16822982234979" src="https://user-images.githubusercontent.com/10473170/229680404-0b28dfd4-382e-4cfc-9392-997f134c0242.png">
+![Snipaste_2024-04-07_16-14-54](https://github.com/ypwhs/CreativeChatGLM/assets/10473170/7ab0c0e8-9ada-43ad-b237-ba0f2008bdac)
 
 如果你想使用 API 的形式来调用，可以运行 `start_offline_api.bat` 启动 API 服务：
 
-<img width="734" alt="企业微信截图_16822982234979" src="https://user-images.githubusercontent.com/10473170/233877877-1a0a1daf-2cf1-41d1-9cd8-7f2ad8cb2427.png">
+![Snipaste_2024-04-07_16-16-01](https://github.com/ypwhs/CreativeChatGLM/assets/10473170/959c1742-da2e-4b37-b40f-6fb96c53ab89)
 
 ## 虚拟环境
 
