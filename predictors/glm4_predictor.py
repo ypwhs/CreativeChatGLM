@@ -211,13 +211,6 @@ def test2():
             temperature=temperature):
         print(response, new_history)
 
-    inputs = tokenizer.apply_chat_template([{"role": "user", "content": query}],
-                                           add_generation_prompt=True,
-                                           tokenize=True,
-                                           return_tensors="pt",
-                                           return_dict=True
-                                           )
-
 
 if __name__ == '__main__':
     test()
