@@ -5,6 +5,7 @@ from typing import List, Dict
 import torch
 from transformers import AutoModel, AutoTokenizer
 from transformers import LogitsProcessor, LogitsProcessorList
+from transformers import BitsAndBytesConfig
 
 from predictors.base import BasePredictor, parse_codeblock
 
@@ -19,25 +20,25 @@ class InvalidScoreLogitsProcessor(LogitsProcessor):
         return scores
 
 
-class ChatGLM3(BasePredictor):
+class GLM4(BasePredictor):
 
-    def __init__(self, model_name):
+    def __init__(self, model_name, int4=False):
         self.predict_mode = 'dict'
         print(f'Loading model {model_name}')
         start = time.perf_counter()
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.tokenizer = AutoTokenizer.from_pretrained(
-            model_name, trust_remote_code=True, resume_download=True)
+            model_name, trust_remote_code=True)
         if 'slim' in model_name:
             model = AutoModel.from_pretrained(
-                model_name, trust_remote_code=True, resume_download=True)
+                model_name, trust_remote_code=True)
             if self.device == 'cuda':
                 model = model.half().to(self.device)
             else:
                 model = model.float()
         elif 'int4' in model_name:
             model = AutoModel.from_pretrained(
-                model_name, trust_remote_code=True, resume_download=True)
+                model_name, trust_remote_code=True)
             if self.device == 'cuda':
                 model = model.half().to(self.device)
             else:
@@ -46,10 +47,11 @@ class ChatGLM3(BasePredictor):
             model = AutoModel.from_pretrained(
                 model_name,
                 trust_remote_code=True,
-                resume_download=True,
                 low_cpu_mem_usage=True,
                 torch_dtype=torch.float16
                 if self.device == 'cuda' else torch.float32,
+                quantization_config=BitsAndBytesConfig(
+                    load_in_4bit=True) if int4 else None,
                 device_map={'': self.device})
             if self.device == 'cpu':
                 model = model.float()
@@ -84,8 +86,8 @@ class ChatGLM3(BasePredictor):
 
         eos_token_id = [
             tokenizer.eos_token_id,
-            tokenizer.get_command("<|user|>"),
-            tokenizer.get_command("<|observation|>")
+            tokenizer.convert_tokens_to_ids("<|user|>"),
+            tokenizer.convert_tokens_to_ids("<|observation|>")
         ]
 
         gen_kwargs = {
@@ -103,22 +105,37 @@ class ChatGLM3(BasePredictor):
         for item in history[:-1]:
             content = item["content"]
             if item["role"] == "system" and "tools" in item:
-                content = content + "\n" + json.dumps(item["tools"], indent=4, ensure_ascii=False)
-            input_ids.extend(tokenizer.build_single_message(item["role"], item.get("metadata", ""), content))
-        batch_input = tokenizer.batch_encode_plus([input_ids], return_tensors="pt", is_split_into_words=True)
+                content = content + "\n" + json.dumps(
+                    item["tools"], indent=4, ensure_ascii=False)
+            input_ids.extend(
+                tokenizer.build_single_message(item["role"],
+                                               item.get("metadata", ""),
+                                               content))
+        batch_input = tokenizer.batch_encode_plus([input_ids],
+                                                  return_tensors="pt",
+                                                  is_split_into_words=True)
         batch_input = batch_input.to(model.device)
 
-        answer_input_ids = tokenizer.build_single_message("assistant", "", answer)
-        batch_answer = tokenizer.batch_encode_plus([answer_input_ids], return_tensors="pt", is_split_into_words=True)
+        answer_input_ids = tokenizer.build_single_message(
+            "assistant", "", answer)
+        batch_answer = tokenizer.batch_encode_plus([answer_input_ids],
+                                                   return_tensors="pt",
+                                                   is_split_into_words=True)
         batch_answer = batch_answer.to(model.device)
 
-        final_input_ids = torch.cat([batch_input['input_ids'], batch_answer['input_ids'][:, 2:]], dim=-1)
+        final_input_ids = torch.cat(
+            [batch_input['input_ids'], batch_answer['input_ids'][:, 2:]],
+            dim=-1)
         final_input_ids = final_input_ids.to(model.device)
 
         final_input = {}
         final_input['input_ids'] = final_input_ids
-        final_input['position_ids'] = model.get_position_ids(final_input_ids, device=final_input_ids.device)
-        final_input['attention_mask'] = torch.ones(final_input_ids.shape, dtype=torch.long, device=final_input_ids.device)
+        final_input['position_ids'] = model.get_position_ids(
+            final_input_ids, device=final_input_ids.device)
+        final_input['attention_mask'] = torch.ones(
+            final_input_ids.shape,
+            dtype=torch.long,
+            device=final_input_ids.device)
 
         for outputs in model.stream_generate(
                 **final_input,
@@ -139,9 +156,9 @@ class ChatGLM3(BasePredictor):
 
 
 def test():
-    model_name = 'THUDM/chatglm3-6b'
+    model_name = 'THUDM/glm-4-9b-chat-1m'
 
-    predictor = ChatGLM3(model_name)
+    predictor = GLM4(model_name)
     top_p = 0.01
     max_length = 128
     temperature = 0.01
@@ -164,17 +181,16 @@ def test():
 
 
 def test2():
-    from chatglm3.modeling_chatglm import ChatGLMForConditionalGeneration
-    model_name = 'THUDM/chatglm3-6b'
+    from glm4.modeling_chatglm import ChatGLMForConditionalGeneration
+    model_name = 'THUDM/glm-4-9b-chat-1m'
     device = 'cuda'
     tokenizer = AutoTokenizer.from_pretrained(
-        model_name, trust_remote_code=True, resume_download=True)
+        model_name, trust_remote_code=True)
     model = ChatGLMForConditionalGeneration.from_pretrained(
         model_name,
         trust_remote_code=True,
-        resume_download=True,
         low_cpu_mem_usage=True,
-        torch_dtype=torch.float16 if device == 'cuda' else torch.float32,
+        torch_dtype=torch.bfloat16 if device == 'cuda' else torch.float32,
         device_map={'': device})
     model = model.eval()
 
@@ -184,7 +200,7 @@ def test2():
         'content': '你是谁？'
     }, {
         'role': 'assistant',
-        'content': '我是张三丰，'
+        'content': '我是张三丰，我是武当派'
     }]
     max_length = 128
     top_p = 0.95

@@ -24,6 +24,7 @@ class InvalidScoreLogitsProcessor(LogitsProcessor):
 class ChatGLM(BasePredictor):
 
     def __init__(self, model_name):
+        self.predict_mode = 'tuple'
         print(f'Loading model {model_name}')
         start = time.perf_counter()
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
