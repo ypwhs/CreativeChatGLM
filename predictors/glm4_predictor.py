@@ -5,6 +5,7 @@ from typing import List, Dict
 import torch
 from transformers import AutoModel, AutoTokenizer
 from transformers import LogitsProcessor, LogitsProcessorList
+from transformers import BitsAndBytesConfig
 
 from predictors.base import BasePredictor, parse_codeblock
 
@@ -21,7 +22,7 @@ class InvalidScoreLogitsProcessor(LogitsProcessor):
 
 class GLM4(BasePredictor):
 
-    def __init__(self, model_name):
+    def __init__(self, model_name, int4=False):
         print(f'Loading model {model_name}')
         start = time.perf_counter()
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -48,6 +49,8 @@ class GLM4(BasePredictor):
                 low_cpu_mem_usage=True,
                 torch_dtype=torch.float16
                 if self.device == 'cuda' else torch.float32,
+                quantization_config=BitsAndBytesConfig(
+                    load_in_4bit=True) if int4 else None,
                 device_map={'': self.device})
             if self.device == 'cpu':
                 model = model.float()
