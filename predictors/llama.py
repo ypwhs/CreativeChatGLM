@@ -120,6 +120,7 @@ def stream_generate(
 class LLaMa(BasePredictor):
 
     def __init__(self, model_name):
+        self.predict_mode = 'tuple'
         print(f'Loading model {model_name}')
         start = time.perf_counter()
         self.model_name = model_name

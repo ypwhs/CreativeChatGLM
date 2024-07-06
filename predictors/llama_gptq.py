@@ -12,6 +12,7 @@ from transformers.utils.hub import cached_file
 
 class LLaMaGPTQ(LLaMa):
     def __init__(self, model_name, checkpoint_path='llama7b-2m-4bit-128g.pt', wbits=4, groupsize=128):
+        self.predict_mode = 'tuple'
         print(f'Loading model {model_name}')
         start = time.perf_counter()
         self.model_name = model_name
