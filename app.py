@@ -9,9 +9,11 @@ print('Done'.center(64, '-'))
 
 # 加载模型
 model_name = 'THUDM/glm-4-9b-chat-1m'
+int4 = True
+
 if 'glm-4' in model_name.lower():
     from predictors.glm4_predictor import GLM4
-    predictor = GLM4(model_name)
+    predictor = GLM4(model_name, int4=int4)
 elif 'chatglm3' in model_name.lower():
     from predictors.chatglm3_predictor import ChatGLM3
     predictor = ChatGLM3(model_name)
