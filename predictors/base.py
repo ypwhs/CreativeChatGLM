@@ -20,20 +20,21 @@ def parse_codeblock(text):
 class BasePredictor(ABC):
 
     @abstractmethod
-    def __init__(self, model_name):
+    def __init__(self, model_name, predict_mode='tuple'):
         self.model = None
         self.tokenizer = None
         self.model_name = model_name
+        self.predict_mode = predict_mode
 
     @abstractmethod
     def stream_chat_continue(self, *args, **kwargs):
         raise NotImplementedError
 
     def predict_continue(self, *args, **kwargs):
-        if 'chatglm3' in self.model_name:
-            yield from self.predict_continue_dict(*args, **kwargs)
-        else:
+        if self.predict_mode == 'tuple':
             yield from self.predict_continue_tuple(*args, **kwargs)
+        else:
+            yield from self.predict_continue_dict(*args, **kwargs)
 
     def predict_continue_tuple(self, query, latest_message, max_length, top_p,
                                temperature, allow_generate, history,
