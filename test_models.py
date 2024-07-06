@@ -1,5 +1,12 @@
+import os
+os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
+
+
 def test_model(model_name):
-    if 'chatglm3' in model_name.lower():
+    if 'glm-4' in model_name.lower():
+        from predictors.glm4_predictor import GLM4
+        predictor = GLM4(model_name)
+    elif 'chatglm3' in model_name.lower():
         from predictors.chatglm3_predictor import ChatGLM3
         predictor = ChatGLM3(model_name)
     elif 'chatglm2' in model_name.lower():
@@ -38,9 +45,7 @@ def test_model(model_name):
 
 def main():
     model_list = [
-        'THUDM/chatglm2-6b-int4',
-        'THUDM/chatglm3-6b',
-        'THUDM/chatglm3-6b-128k',
+        'THUDM/glm-4-9b-chat-1m',
     ]
     for model_name in model_list:
         print(f'Testing {model_name}')
