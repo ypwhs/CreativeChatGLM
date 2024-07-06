@@ -186,7 +186,7 @@ def test2():
         model_name,
         trust_remote_code=True,
         low_cpu_mem_usage=True,
-        torch_dtype=torch.float16 if device == 'cuda' else torch.float32,
+        torch_dtype=torch.bfloat16 if device == 'cuda' else torch.float32,
         device_map={'': device})
     model = model.eval()
 
