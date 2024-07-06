@@ -23,6 +23,7 @@ class InvalidScoreLogitsProcessor(LogitsProcessor):
 class GLM4(BasePredictor):
 
     def __init__(self, model_name, int4=False):
+        self.predict_mode = 'dict'
         print(f'Loading model {model_name}')
         start = time.perf_counter()
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
