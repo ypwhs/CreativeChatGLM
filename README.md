@@ -15,13 +15,13 @@
 * 没有Python经验，不会搭建环境
 * 网络环境不好，配置环境、下载模型速度慢
 
-| 名称 | 大小      | 百度网盘 | 备注                                     |
-| ---- |---------| ---- |----------------------------------------|
-| **小显存离线包** | 5.3 GB  | [点击下载](https://pan.baidu.com/s/1fI1JWBE7KP7cJsoD-dL38g?pwd=cglm) | chatglm2-6b-int4 离线包，显存需求 8GB          |
-| 大显存离线包 | 11.5 GB | [点击下载](https://pan.baidu.com/s/10oUwW2DUMDFk3RuIkaqGbA?pwd=cglm) | chatglm3-6b 离线包，显存需求 16GB              |
-| 长文本离线包 | 11.5 GB | [点击下载](https://pan.baidu.com/s/1kbeTdPcUmYd16IE0stXnTA?pwd=cglm) | chatglm3-6b-128k 离线包，显存需求 16GB         |
-| GLM4 离线包 | 16.98GB | [点击下载](https://pan.baidu.com/s/1iGCzB5DO2sGCzKtARvTXnw?pwd=cglm) | GLM-4-9B 离线包，INT4 加载，显存需求 10GB          |
-| 环境离线包 | 2.6 GB  | [点击下载](https://pan.baidu.com/s/1Kt9eZlgXJ03bVwIM22IR6w?pwd=cglm) | 不带权重的环境包，启动之后自动下载 chatglm2-6b-int4 权重。 |
+| 名称           | 大小      | 百度网盘 | 备注                                     |
+|--------------|---------| ---- |----------------------------------------|
+| **小显存离线包**   | 5.3 GB  | [点击下载](https://pan.baidu.com/s/1fI1JWBE7KP7cJsoD-dL38g?pwd=cglm) | chatglm2-6b-int4 离线包，显存需求 8GB          |
+| 大显存离线包       | 11.5 GB | [点击下载](https://pan.baidu.com/s/10oUwW2DUMDFk3RuIkaqGbA?pwd=cglm) | chatglm3-6b 离线包，显存需求 16GB              |
+| 长文本离线包       | 11.5 GB | [点击下载](https://pan.baidu.com/s/1kbeTdPcUmYd16IE0stXnTA?pwd=cglm) | chatglm3-6b-128k 离线包，显存需求 16GB         |
+| **GLM4 离线包** | 16.98GB | [点击下载](https://pan.baidu.com/s/1iGCzB5DO2sGCzKtARvTXnw?pwd=cglm) | GLM-4-9B 离线包，INT4 加载，显存需求 10GB          |
+| 环境离线包        | 2.6 GB  | [点击下载](https://pan.baidu.com/s/1Kt9eZlgXJ03bVwIM22IR6w?pwd=cglm) | 不带权重的环境包，启动之后自动下载 chatglm2-6b-int4 权重。 |
 
 除了这些一键环境包之外，你还可以在下面下载更多模型的权重。
 
